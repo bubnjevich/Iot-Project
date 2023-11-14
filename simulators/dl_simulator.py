@@ -10,14 +10,5 @@ class DoorLightSimulator(threading.Thread):
     def run(self):
         while True:
             if self.running_flag:
-                state = "ON"
-                if self.state == False:
-                    state = "OFF"
-                print(f"Current Door Light State: {state}")
-                new_state = input("Enter New Door Light State (on/off): ")
-                if(new_state.upper() == "ON"):
-                    self.state = True
-                elif(new_state.upper() == "OFF"):
-                    self.state = False
-                time.sleep(1)
-
+                print(f"Current Door Light State: {self.state}")
+                time.sleep(5)
