@@ -18,6 +18,6 @@ class DoorLightSimulator(threading.Thread):
                 if(new_state.upper() == "ON"):
                     self.state = True
                 elif(new_state.upper() == "OFF"):
-                    self.start = False
+                    self.state = False
                 time.sleep(1)
 

@@ -7,26 +7,29 @@ from components.rdht_controller import run_rdht
 from components.dms_controller import run_dms
 from components.dl_controller import run_dl
 from components.ds_controller import run_ds
+
 try:
 	import RPi.GPIO as GPIO
 	
 	GPIO.setmode(GPIO.BCM)
 except:
 	pass
+
 def menu():
 	print("\nIoT Device Menu:")
-	print("1. Door Sensor (Button)")
-	print("2. Door Light (LED diode)")
-	print("3. Door Ultrasonic Sensor")
-	print("4. Door Buzzer")
-	print("5. Door Motion Sensor")
-	print("6. Door Membrane Switch")
-	print("7. Room PIR 1")
-	print("8. Room PIR 2")
-	print("9. Room DHT 1")
-	print("10. Room DHT 2")
+	print("1. Door Sensor (Button)") # veljko - OK
+	print("2. Door Light (LED diode)") # saki ovo je aktuator - OK
+	print("3. Door Ultrasonic Sensor") # veljko DUS1 - NO
+	print("4. Door Buzzer") # veljko ovo je aktuator
+	print("5. Door Motion Sensor") # saki
+	print("6. Door Membrane Switch") # saki
+	print("7. Room PIR 1") # saki
+	print("8. Room PIR 2") # saki
+	print("9. Room DHT 1") # veljko
+	print("10. Room DHT 2") # veljko
 	choice = int(input("Enter the number of the IoT device (Ctrl+C to exit): "))
 	return choice
+
 def start_threads(thread_list, output_queue, settings):
 	ds1_settings = settings['DS1']
 	dl_settings = settings['DL']
@@ -39,6 +42,7 @@ def start_threads(thread_list, output_queue, settings):
 	run_dms(dms_settings, thread_list, output_queue)
 	run_rdht(rdht1_settings, thread_list, output_queue)
 	run_rdht(rdht2_settings, thread_list, output_queue)
+	
 def main():
 	output_queue = Queue()
 	settings = load_settings()
