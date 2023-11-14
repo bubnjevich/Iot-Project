@@ -1,11 +1,11 @@
 {
     "DS1": {
         "simulated": true,
-        "pin": 17
+        "port": 17
     },
     "DL": {
-        "simulated": false,
-        "pin": 17
+        "simulated": true,
+        "port": 18
     },
     "DUS1": {
         "simulated": true,
@@ -21,7 +21,14 @@
     },
     "DMS": {
         "simulated": true,
-        "pin": 17
+        "R1" : 25,
+        "R2" : 8,
+        "R3" : 7,
+        "R4" : 1,
+        "C1" : 12,
+        "C2" : 16,
+        "C3" : 20,
+        "C4" : 21
     },
     "RPIR1": {
         "simulated": true,

@@ -9,10 +9,7 @@ def run_dms(settings, threads_list, output_queue):
             dms_simulator.start()
             threads_list.append(dms_simulator)
         else:
-            from sensors.rdht1_sensor import run_dht_loop, DHT
-            print("Starting dht1 loop")
-            rdht1 = DHT(settings['pin'])
-            rdht1_thread = threading.Thread(target=run_dht_loop, args=(rdht1, 2, dht_callback, stop_event))
-            rdht1_thread.start()
-            threads_list.append(rdht1_thread)
-            print("Dht1 loop started")
+            from sensors.dms_sensor import MembraneKeypad
+            dms = MembraneKeypad(settings, output_queue)
+            dms.start()
+            threads_list.append(dms)
