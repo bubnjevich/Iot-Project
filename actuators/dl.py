@@ -23,12 +23,12 @@ class LED(threading.Thread):
         self.setup()
         while True:
             if self.running_flag:
-                print(f"Current Door Light State: {self.state}")
-                new_state = input("Enter New Door Light State (on/off): ")
-                if(new_state.upper() == "ON"):
-                    self.state = True
+                state = "ON"
+                if not self.state:
+                     state = "OFF"
+                self.output_queue.put(f"Current Door Light State: {state}")
+                if self.state:
                     GPIO.output(self.port,GPIO.HIGH)
-                elif(new_state.upper() == "OFF"):
-                    self.start = False
+                else:
                     GPIO.output(self.port,GPIO.LOW)
                 time.sleep(1)

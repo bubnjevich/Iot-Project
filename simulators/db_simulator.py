@@ -17,4 +17,3 @@ class DoorBuzzerSimulator(threading.Thread):
                     self.output_queue.put("Buzz")
                     time.sleep(0.1)
                     self.output_queue.put("Buzz")
-                    time.sleep(5)

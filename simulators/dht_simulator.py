@@ -6,12 +6,13 @@ def generate_values(initial_temp = 25, initial_humidity=20):
       temperature = initial_temp
       humidity = initial_humidity
       while True:
-            temperature = temperature + random.randint(-1, 1)
-            humidity = humidity + random.randint(-1, 1)
-            if humidity < 0:
-                  humidity = 0
-            if humidity > 100:
-                  humidity = 100
+            temperature += random.uniform(-0.5, 0.5)  # Small random changes
+            humidity += random.uniform(-1, 1)  # Moderate random changes
+
+            # Ensure values are within valid ranges
+            temperature = max(0, min(45, temperature))
+            humidity = max(0, min(100, humidity))
+
             yield humidity, temperature
 
 def generate_output(humidity, temperature, code):
@@ -19,8 +20,8 @@ def generate_output(humidity, temperature, code):
     output = "="*20
     output += f"\nTimestamp: {time.strftime('%H:%M:%S', t)}\n"
     output += f"Code: {code}\n"
-    output += f"Humidity: {humidity}%\n"
-    output += f"Temperature: {temperature}°C\n"
+    output += f"Humidity: {humidity:.2f}%\n"
+    output += f"Temperature: {temperature:.2f}°C\n"
     return output
             
 class DHTSimulator(threading.Thread):
@@ -31,9 +32,9 @@ class DHTSimulator(threading.Thread):
 
     def run(self):
         while True:
-            for humidity, temperature in generate_values():
+            for humidity, temperature in generate_values(10, 30):
                 if self.running_flag:
-                    code = 100
+                    code = 0
                     self.output_queue.put(generate_output(humidity, temperature, code))
                     time.sleep(1)
               

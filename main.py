@@ -1,7 +1,5 @@
-import threading
-import time
 from queue import Queue
-import random
+import time
 from configuration.configuration import load_settings
 from components.dht_controller import run_dht
 from components.dms_controller import run_dms
@@ -13,7 +11,6 @@ from components.db_controller import run_db
 
 try:
 	import RPi.GPIO as GPIO
-	
 	GPIO.setmode(GPIO.BCM)
 except:
 	pass
@@ -89,7 +86,6 @@ def main():
 					if buzz.upper() == "B":
 						thread_list[3].running_flag = True
 						menu_flag = False
-				
 				else:
 					selected_thread = thread_list[choice - 1]
 					selected_thread.running_flag = True
@@ -97,6 +93,7 @@ def main():
 			else:
 				output = output_queue.get()
 				print(output)
+			time.sleep(1)
 		except KeyboardInterrupt:
 			menu_flag = True
 			while not output_queue.empty():
