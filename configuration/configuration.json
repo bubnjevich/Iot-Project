@@ -1,23 +1,33 @@
 {
     "DS1": {
         "simulated": true,
-        "port": 17
+        "port": 17,
+        "runs_on": "PI1",
+        "name": "DS1 - Hallway"
     },
     "DL": {
         "simulated": true,
-        "port": 18
+        "port": 18,
+        "runs_on": "PI2",
+        "name": "DL - Device DL"
     },
     "DUS1": {
         "simulated": true,
-        "pin": 17
+        "pin": 17,
+        "runs_on": "PI2",
+        "name": "DUS1 - Device DUS"
     },
     "DB": {
         "simulated": true,
-        "pin": 17
+        "pin": 17,
+         "runs_on": "PI3",
+        "name": "DB - Device DB"
     },
     "DPIR1": {
         "simulated": true,
-        "pin": 17
+        "pin": 17,
+        "runs_on": "PI3",
+        "name": "DB - MY_DPIR1"
     },
     "DMS": {
         "simulated": true,
@@ -28,22 +38,32 @@
         "C1" : 12,
         "C2" : 16,
         "C3" : 20,
-        "C4" : 21
+        "C4" : 21,
+        "runs_on": "PI4",
+        "name": "DB - SMART_DMS"
     },
     "RPIR1": {
         "simulated": true,
-        "pin": 17
+        "pin": 17,
+        "runs_on": "PI2",
+        "name": "DB - SMART_RPIR1"
     },
     "RPIR2": {
         "simulated": true,
-        "pin": 17
+        "pin": 17,
+         "runs_on": "PI2",
+        "name": "DB - SMART RPIR2"
     },
     "RDHT1": {
         "simulated": true,
-        "pin": 17
+        "pin": 17,
+        "runs_on": "PI5",
+        "name": "DB - SMART RPIR5"
     },
     "RDHT2": {
         "simulated": true,
-        "pin": 17
+        "pin": 17,
+         "runs_on": "PI5",
+        "name": "DB - MY SMART RDHT2"
     }
 }
