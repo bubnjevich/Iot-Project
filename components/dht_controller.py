@@ -1,3 +1,4 @@
+from datetime import datetime
 from simulators.dht_simulator import DHTSimulator
 import json
 import paho.mqtt.publish as publish
@@ -33,12 +34,16 @@ publisher_thread.start()
 def dht_callback(humidity, temperature,dht_settings, publish_event):
     global publish_data_counter, publish_data_limit
 
+    # Current timestamp
+    current_timestamp = datetime.utcnow().isoformat()
+    
     temp_payload = {
         "measurement": "Temperature",
         "simulated": dht_settings['simulated'],
         "runs_on": dht_settings["runs_on"],
         "name": dht_settings["name"],
-        "value": temperature
+        "value": temperature,
+        "time": current_timestamp
     }
 
     humidity_payload = {
@@ -46,7 +51,8 @@ def dht_callback(humidity, temperature,dht_settings, publish_event):
         "simulated": dht_settings['simulated'],
         "runs_on": dht_settings["runs_on"],
         "name": dht_settings["name"],
-        "value": humidity
+        "value": humidity,
+        "time": current_timestamp
     }
 
     with counter_lock:
@@ -64,6 +70,6 @@ def run_dht(settings, threads_list, output_queue):
             threads_list.append(dht_simulator)
         else:
             from sensors.dht_sensor import DHT
-            dht_sensor = DHT(settings['pin'], output_queue)
+            dht_sensor = DHT(settings['pin'], output_queue, dht_callback, publish_event)
             dht_sensor.start()
             threads_list.append(dht_sensor)

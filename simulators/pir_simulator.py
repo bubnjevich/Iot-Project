@@ -7,7 +7,7 @@ class MotionSensorSimulator(threading.Thread):
     def __init__(self, output_queue, callback, settings, publish_event):
         super().__init__()
         self.output_queue = output_queue
-        self.running_flag = False
+        self.running_flag = True
         self.callback = callback
         self.settings = settings
         self.publish_event = publish_event
@@ -17,5 +17,4 @@ class MotionSensorSimulator(threading.Thread):
             if self.running_flag:
                 motion = random.choice(['Detected', 'Not Detected'])
                 self.callback(1 if motion == 'Detected' else 0, self.settings, self.publish_event)
-                self.output_queue.put(f"Motion Sensor Status: {motion}")
                 time.sleep(1)

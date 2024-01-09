@@ -8,7 +8,7 @@ class DoorUltrasonicSensorSimulator(threading.Thread):
     def __init__(self, output_queue, callback, settings, publish_event):
         super().__init__()
         self.output_queue = output_queue
-        self.running_flag = False
+        self.running_flag = True
         self.callback = callback
         self.settings = settings
         self.publish_event = publish_event
@@ -18,5 +18,4 @@ class DoorUltrasonicSensorSimulator(threading.Thread):
             if self.running_flag:
                 distance = round(random.uniform(1, 100), 2)
                 self.callback(distance, self.settings, self.publish_event)
-                self.output_queue.put(f"Distance: {distance} cm")
                 time.sleep(1)

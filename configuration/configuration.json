@@ -1,35 +1,41 @@
 {
     "DS1": {
+        "device_type": "ds",
         "simulated": true,
         "port": 17,
         "runs_on": "PI1",
         "name": "DS1 - Hallway"
     },
     "DL": {
+        "device_type": "dl",
         "simulated": true,
         "port": 18,
         "runs_on": "PI2",
         "name": "DL - Device DL"
     },
     "DUS1": {
+        "device_type": "dus",
         "simulated": true,
         "pin": 17,
         "runs_on": "PI2",
         "name": "DUS1 - Device DUS"
     },
     "DB": {
+        "device_type": "db",
         "simulated": true,
         "pin": 17,
          "runs_on": "PI3",
         "name": "DB - Device DB"
     },
     "DPIR1": {
+        "device_type": "pir",
         "simulated": true,
         "pin": 17,
         "runs_on": "PI3",
         "name": "DB - MY_DPIR1"
     },
     "DMS": {
+        "device_type": "dms",
         "simulated": true,
         "R1" : 25,
         "R2" : 8,
@@ -43,24 +49,28 @@
         "name": "DB - SMART_DMS"
     },
     "RPIR1": {
+        "device_type": "pir",
         "simulated": true,
         "pin": 17,
         "runs_on": "PI2",
         "name": "DB - SMART_RPIR1"
     },
     "RPIR2": {
+        "device_type": "pir",
         "simulated": true,
         "pin": 17,
          "runs_on": "PI2",
         "name": "DB - SMART RPIR2"
     },
     "RDHT1": {
+        "device_type": "dht",
         "simulated": true,
         "pin": 17,
         "runs_on": "PI5",
         "name": "DB - SMART RPIR5"
     },
     "RDHT2": {
+        "device_type": "dht",
         "simulated": true,
         "pin": 17,
          "runs_on": "PI5",

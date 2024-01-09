@@ -9,8 +9,8 @@ app = Flask(__name__)
 
 
 # InfluxDB Configuration
-token = "W7OASwQ3FcyAdIWqbGHDASME_F89f-_DEp0iXtVGlr2T_v7fcbl_aTZZiNeCGCPbISrm_B5BvJ90lglfe3qPPQ=="
-org = "FTN"
+token = "7wsHYFPGQuQPUfOrtdAXAQ-dha3qmd-NBQrwW6F-4d5tRQIGmsrKIMP_oQbTHeahyLgH9ogBd6yzYvQflCDQaw=="
+org = "nwt"
 url = "http://localhost:8086"
 bucket = "example_db"
 influxdb_client = InfluxDBClient(url=url, token=token, org=org)
@@ -34,14 +34,19 @@ mqtt_client.on_message = lambda client, userdata, msg: save_to_db(json.loads(msg
 
 def save_to_db(data):
     write_api = influxdb_client.write_api(write_options=SYNCHRONOUS)
-    point = (
-        Point(data["measurement"])
-        .tag("simulated", data["simulated"])
-        .tag("runs_on", data["runs_on"])
-        .tag("name", data["name"])
-        .field("measurement", data["value"])
-    )
-    write_api.write(bucket=bucket, org=org, record=point)
+    try:
+        time = data["time"]
+        point = (
+            Point(data["measurement"])
+            .tag("simulated", data["simulated"])
+            .tag("runs_on", data["runs_on"])
+            .tag("name", data["name"])
+            .field("measurement", data["value"])
+            .time(time)
+        )
+        write_api.write(bucket=bucket, org=org, record=point)
+    except:
+        pass
 
 
 # Route to store dummy data

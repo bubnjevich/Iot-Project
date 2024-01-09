@@ -4,7 +4,7 @@ import time
 class DoorLightSimulator(threading.Thread):
     def __init__(self, output_queue):
         super().__init__()
-        self.running_flag = False
+        self.running_flag = True
         self.state = False
         self.output_queue = output_queue
 

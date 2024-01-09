@@ -6,7 +6,7 @@ class DoorMembraneSwitchSimulator(threading.Thread):
     def __init__(self, output_queue):
         super().__init__()
         self.output_queue = output_queue
-        self.running_flag = False
+        self.running_flag = True
 
     def run(self):
         while True:

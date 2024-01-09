@@ -2,6 +2,7 @@ from simulators.dus_simulator import DoorUltrasonicSensorSimulator
 from broker_settings import HOSTNAME, PORT
 import paho.mqtt.publish as publish
 import json
+from datetime import datetime
 import threading
 
 
@@ -32,12 +33,15 @@ publisher_thread.start()
 def dus_callback(distance, ds_settings, publish_event):
     global publish_data_counter, publish_data_limit
 
+    current_timestamp = datetime.utcnow().isoformat()
+
     status_payload = {
         "measurement": "Distance",
         "simulated": ds_settings['simulated'],
         "runs_on": ds_settings["runs_on"],
         "name": ds_settings["name"],
-        "value": distance
+        "value": distance,
+        "time": current_timestamp
     }
 
     with counter_lock:
