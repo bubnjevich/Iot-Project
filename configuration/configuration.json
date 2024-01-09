@@ -18,7 +18,9 @@
         "simulated": true,
         "pin": 17,
         "runs_on": "PI2",
-        "name": "DUS1 - Device DUS"
+        "name": "DUS1 - Device DUS",
+        "TRIG_PIN" : 23,
+        "ECHO_PIN" : 24
     },
     "DB": {
         "device_type": "db",
