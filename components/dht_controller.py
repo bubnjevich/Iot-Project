@@ -70,6 +70,6 @@ def run_dht(settings, threads_list, output_queue):
             threads_list.append(dht_simulator)
         else:
             from sensors.dht_sensor import DHT
-            dht_sensor = DHT(settings['pin'], output_queue, dht_callback, publish_event)
+            dht_sensor = DHT(settings['pin'], output_queue, dht_callback, settings, publish_event)
             dht_sensor.start()
             threads_list.append(dht_sensor)

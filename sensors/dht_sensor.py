@@ -17,8 +17,10 @@ class DHT(threading.Thread):
 	humidity = 0
 	temperature = 0
 	
-	def __init__(self,pin, output_queue, callback, publish_event):
+	def __init__(self, pin, output_queue, callback, settings, publish_event):
+		super().__init__()
 		self.pin = pin
+		self.settings = settings
 		self.bits = [0,0,0,0,0]
 		self.output_queue = output_queue
 		self.running_flag = True
