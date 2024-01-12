@@ -9,10 +9,17 @@ app = Flask(__name__)
 
 
 # InfluxDB Configuration
-token = "_EW0VaB52DDq_b7Z-wWZVMUPIFn0GXT-vpAvgWTEwml7tniOk5gRCeKvfXXXLnThvRdLl782Z1_tKVxWITjNcQ=="
-org = "FTN"
+token = ""
+org = ""
+with open(".env", "r") as file:
+    for line in file:
+        key, value = line.strip().split("=", 1)
+        if key == "token": token = value
+        if key == "org" : org = value
+
 url = "http://localhost:8086"
 bucket = "example_db"
+
 influxdb_client = InfluxDBClient(url=url, token=token, org=org)
 
 
