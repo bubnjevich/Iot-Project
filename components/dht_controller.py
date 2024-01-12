@@ -21,6 +21,7 @@ def publisher_task(event, dht_batch):
             publish_data_counter = 0
             dht_batch.clear()
         publish.multiple(local_dht_batch, hostname=HOSTNAME, port=PORT)
+        print(local_dht_batch)
         print(f'published {publish_data_limit} dht values')
         event.clear()
 

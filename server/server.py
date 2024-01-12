@@ -9,8 +9,8 @@ app = Flask(__name__)
 
 
 # InfluxDB Configuration
-token = "7wsHYFPGQuQPUfOrtdAXAQ-dha3qmd-NBQrwW6F-4d5tRQIGmsrKIMP_oQbTHeahyLgH9ogBd6yzYvQflCDQaw=="
-org = "nwt"
+token = "_EW0VaB52DDq_b7Z-wWZVMUPIFn0GXT-vpAvgWTEwml7tniOk5gRCeKvfXXXLnThvRdLl782Z1_tKVxWITjNcQ=="
+org = "FTN"
 url = "http://localhost:8086"
 bucket = "example_db"
 influxdb_client = InfluxDBClient(url=url, token=token, org=org)
@@ -33,6 +33,7 @@ mqtt_client.on_message = lambda client, userdata, msg: save_to_db(json.loads(msg
 
 
 def save_to_db(data):
+    print(data)
     write_api = influxdb_client.write_api(write_options=SYNCHRONOUS)
     try:
         time = data["time"]

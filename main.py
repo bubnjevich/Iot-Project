@@ -56,16 +56,18 @@ def get_device(menu, length):
 		
 
 def start_threads(thread_list, output_queue, settings):
-    for key, device_settings in settings.items():
-        device_type = device_settings['device_type']
-        function_name = "run_" + device_type
+	for key, device_settings in settings.items():
+		device_type = device_settings['device_type']
+		function_name = "run_" + device_type
+		if (device_type != "dht"):
+			continue
 
-        controller_function = globals().get(function_name)
+		controller_function = globals().get(function_name)
 
-        if controller_function and callable(controller_function):
-            controller_function(device_settings, thread_list, output_queue)
-        else:
-            print(f"No controller function found for device type: {device_type}")
+		if controller_function and callable(controller_function):
+			controller_function(device_settings, thread_list, output_queue)
+		else:
+			print(f"No controller function found for device type: {device_type}")
 
 def main():
 	output_queue = Queue()
