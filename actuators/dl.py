@@ -9,7 +9,7 @@ except:
 
 
 class LED(threading.Thread):
-    def __init__(self, port, output_queue):
+    def __init__(self, port, output_queue): # port 18
         self.output_queue = output_queue
         self.running_flag = False
         self.port = port

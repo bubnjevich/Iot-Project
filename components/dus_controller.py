@@ -59,6 +59,6 @@ def run_dus(settings, threads_list, output_queue):
             threads_list.append(dus1_simulator)
         else:
             from sensors.dus_sensor import UltrasonicDistanceSensor
-            dus = UltrasonicDistanceSensor(settings["TRIG_PIN"], settings["ECHO_PIN"], output_queue, dus_callback, publish_event)
+            dus = UltrasonicDistanceSensor(settings["TRIG_PIN"], settings["ECHO_PIN"], settings, output_queue, dus_callback, publish_event)
             dus.start()
             threads_list.append(dus)

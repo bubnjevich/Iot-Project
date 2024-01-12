@@ -7,6 +7,7 @@ except:
 
 class MembraneKeypad(threading.Thread):
 	def __init__(self, settings, output_queue):
+		super().__init__()
 		self.output_queue = output_queue
 		self.running_flag = False
 		self.R1 = settings["R1"]
