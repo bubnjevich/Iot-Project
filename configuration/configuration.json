@@ -111,6 +111,7 @@
         "runs_on": "PI2",
         "name": "Garage DHT"
     },
+    
     "GLCD" : {
         "device_type": "lcd",
         "simulated": true,

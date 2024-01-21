@@ -10,6 +10,7 @@ except:
 
 class LED(threading.Thread):
     def __init__(self, port, output_queue, callback, settings, publish_event): # port 18
+        super().__init__()
         self.output_queue = output_queue
         self.running_flag = False
         self.port = port
