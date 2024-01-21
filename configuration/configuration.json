@@ -167,7 +167,7 @@
     },
 
     "B4SD" : {
-        "device_type": "4sd",
+        "device_type": "four_sd",
         "simulated": true,
         "runs_on": "PI3",
         "name": "Bedroom 4 Digit 7 Segment Display"

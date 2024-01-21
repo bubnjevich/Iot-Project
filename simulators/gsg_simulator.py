@@ -2,9 +2,6 @@ import threading
 import time
 import random
 
-
-
-
 class GSGSimulator(threading.Thread):
     def __init__(self, output_queue, callback, settings, publish_event):
         super().__init__()

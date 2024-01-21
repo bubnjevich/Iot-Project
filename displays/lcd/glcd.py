@@ -1,9 +1,8 @@
 import threading
 import time
 from typing import Any
-
-from PCF8574 import PCF8574_GPIO
-from Adafruit_LCD1602 import Adafruit_CharLCD
+from displays.lcd.PCF8574 import PCF8574_GPIO
+from displays.lcd.Adafruit_LCD1602 import Adafruit_CharLCD
 
 class LCD(threading.Thread):
 

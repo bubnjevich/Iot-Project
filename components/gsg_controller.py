@@ -25,7 +25,7 @@ def publisher_task(event, gsg_batch):
 
 
 publish_event = threading.Event()
-publisher_thread = threading.Thread(target=publisher_task, args=(publish_event, dus_batch,))
+publisher_thread = threading.Thread(target=publisher_task, args=(publish_event, gsg_batch,))
 publisher_thread.daemon = True
 publisher_thread.start()
 
@@ -40,22 +40,30 @@ def gsg_callback(accel, gyro, gsg_settings, publish_event):
         "simulated": gsg_settings['simulated'],
         "runs_on": gsg_settings["runs_on"],
         "name": gsg_settings["name"],
-        "value": accel,
+        "accel": {
+            "Ax": accel[0],
+            "Ay": accel[1],
+            "Az": accel[2],
+        },
         "time": current_timestamp
     }
 
     status_gyro_payload = {
-        "measurement": "Gyroscope",
+        "measurement": "Rotation",
         "simulated": gsg_settings['simulated'],
         "runs_on": gsg_settings["runs_on"],
         "name": gsg_settings["name"],
-        "value": gyro,
+        "gyro": {
+            "Gx": gyro[0],
+            "Gy": gyro[1],
+            "Gz": gyro[2],
+        },
         "time": current_timestamp
     }
 
     with counter_lock:
         gsg_batch.append(('Acceleration', json.dumps(status_accel_payload), 0, True))
-        gsg_batch.append(('Gyroscope', json.dumps(status_gyro_payload), 0, True))
+        gsg_batch.append(('Rotation', json.dumps(status_gyro_payload), 0, True))
         publish_data_counter += 1
 
     if publish_data_counter >= publish_data_limit:

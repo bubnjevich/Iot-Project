@@ -1,4 +1,4 @@
-from lcd.glcd import LCD
+from displays.lcd.glcd import LCD
 
 def send_dht(temperature, humidity):
     pass

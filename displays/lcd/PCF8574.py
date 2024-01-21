@@ -1,4 +1,7 @@
-import smbus
+try:
+	import smbus
+except:
+	pass
 import time
 class PCF8574_I2C(object):
 	OUPUT = 0
@@ -20,7 +23,7 @@ class PCF8574_I2C(object):
 		self.bus.write_byte(self.address,value)
 
 	def digitalRead(self,pin):#Read PCF8574 one port of the data
-		value = readByte()	
+		value = self.readByte()	
 		return (value&(1<<pin)==(1<<pin)) and 1 or 0
 		
 	def digitalWrite(self,pin,newvalue):#Write data to PCF8574 one port
@@ -29,7 +32,10 @@ class PCF8574_I2C(object):
 			value |= (1<<pin)
 		elif (newvalue == 0):
 			value &= ~(1<<pin)
-		self.writeByte(value)	
+		self.writeByte(value)
+
+	def destroy(self):
+		self.bus.close()
 
 def loop():
 	mcp = PCF8574_I2C(0x27)
@@ -60,14 +66,13 @@ class PCF8574_GPIO(object):#Standardization function interface
 	def output(self,pin,value):#Write data to PCF8574 one port
 		self.chip.digitalWrite(pin,value)
 		
-def destroy():
-	bus.close()
+
 	
 if __name__ == '__main__':
 	print ('Program is starting ... ')
 	try:
 		loop()
 	except KeyboardInterrupt:
-		destroy()
-		
+		#destroy()
+		pass
 	
