@@ -6,10 +6,13 @@ except:
 	pass
 
 class MembraneKeypad(threading.Thread):
-	def __init__(self, settings, output_queue):
+	def __init__(self, settings, output_queue, callback, publish_event):
 		super().__init__()
 		self.output_queue = output_queue
-		self.running_flag = False
+		self.running_flag = True
+		self.callback = callback
+		self.settings = settings
+		self.publish_event = publish_event
 		self.R1 = settings["R1"]
 		self.R2 = settings["R2"]
 		self.R3 = settings["R3"]
@@ -18,6 +21,7 @@ class MembraneKeypad(threading.Thread):
 		self.C2 = settings["C2"]
 		self.C3 = settings["C3"]
 		self.C4 = settings["C4"]
+		self.setup()
 
 	def setup(self):
 		GPIO.setwarnings(False)
@@ -36,13 +40,13 @@ class MembraneKeypad(threading.Thread):
 	def readLine(self, line, characters):
 		GPIO.output(line, GPIO.HIGH)
 		if(GPIO.input(self.C1) == 1):
-			self.output_queue.put(characters[0])
+			self.callback(characters[0], self.settings, self.publish_event)
 		if(GPIO.input(self.C2) == 1):
-			self.output_queue.put(characters[1])
+			self.callback(characters[1], self.settings, self.publish_event)
 		if(GPIO.input(self.C3) == 1):
-			self.output_queue.put(characters[2])
+			self.callback(characters[2], self.settings, self.publish_event)
 		if(GPIO.input(self.C4) == 1):
-			self.output_queue.put(characters[3])
+			self.callback(characters[3], self.settings, self.publish_event)
 		GPIO.output(line, GPIO.LOW)
 
 	def run(self):

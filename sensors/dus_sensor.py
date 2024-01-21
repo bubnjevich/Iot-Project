@@ -60,5 +60,6 @@ class UltrasonicDistanceSensor(threading.Thread):
 					self.callback(distance, self.settings, self.publish_event)
 					time.sleep(1)
 				else:
-					self.output_queue.put('Measurement timed out')
-				time.sleep(1)
+					self.callback("Measurement timed out", self.settings, self.publish_event)
+					#self.output_queue.put('Measurement timed out')
+					time.sleep(1)

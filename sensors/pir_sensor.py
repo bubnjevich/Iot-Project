@@ -6,11 +6,14 @@ except:
 	pass
 
 class PIRMotionSensor(threading.Thread):
-	def __init__(self, pin, output_queue):
+	def __init__(self, pin, output_queue, callback, settings, publish_event):
 		super().__init__()
 		self.pin = pin
 		self.output_queue = output_queue
 		self.running_flag = False
+		self.settings = settings
+		self.callback = callback
+		self.publish_event = publish_event
 
 	def setup(self):
 		GPIO.setmode(GPIO.BCM)
@@ -28,8 +31,12 @@ class PIRMotionSensor(threading.Thread):
 		#  Isto logiku primeniti na DPIR2 i DUS2
 		#  Čuvati brojno stanje osoba u objektu.
 		if self.running_flag:
-			self.output_queue.put("DETECTED")
+			#self.output_queue.put("DETECTED")
+			self.callback(1, self.settings, self.publish_event)
+
 
 	def no_motion(self, channel):
 		if self.running_flag:
-			self.output_queue.put("NOT DETECTED")
+			#self.output_queue.put("NOT DETECTED")
+			self.callback(0, self.settings, self.publish_event)
+

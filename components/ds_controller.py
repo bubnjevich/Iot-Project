@@ -9,7 +9,7 @@ import json
 
 ds_batch = []
 publish_data_counter = 0
-publish_data_limit = 5
+publish_data_limit = 1
 counter_lock = threading.Lock()
 
 
@@ -59,6 +59,6 @@ def run_ds(settings, threads_list, output_queue):
             threads_list.append(ds_simulator)
         else:
             from sensors.ds_sensor import Button
-            ds = Button(settings['port'], output_queue)
+            ds = Button(settings['port'], output_queue,  ds_callback, settings, publish_event)
             ds.start()
             threads_list.append(ds)

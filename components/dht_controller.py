@@ -4,7 +4,9 @@ import json
 import paho.mqtt.publish as publish
 from broker_settings import HOSTNAME, PORT
 
+
 import threading
+
 
 dht_batch = []
 publish_data_counter = 0
@@ -21,7 +23,6 @@ def publisher_task(event, dht_batch):
             publish_data_counter = 0
             dht_batch.clear()
         publish.multiple(local_dht_batch, hostname=HOSTNAME, port=PORT)
-        print(local_dht_batch)
         print(f'published {publish_data_limit} dht values')
         event.clear()
 
@@ -37,7 +38,6 @@ def dht_callback(humidity, temperature,dht_settings, publish_event):
 
     # Current timestamp
     current_timestamp = datetime.utcnow().isoformat()
-    
     temp_payload = {
         "measurement": "Temperature",
         "simulated": dht_settings['simulated'],
