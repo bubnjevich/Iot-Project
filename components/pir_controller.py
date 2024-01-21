@@ -4,11 +4,12 @@ from simulators.ds_simulator import DoorSensorSimulator
 from broker_settings import HOSTNAME, PORT
 import paho.mqtt.publish as publish
 import json
+from datetime import datetime
 
 
 pir_batch = []
 publish_data_counter = 0
-publish_data_limit = 1
+publish_data_limit = 5
 counter_lock = threading.Lock()
 
 
@@ -33,12 +34,15 @@ publisher_thread.start()
 def pir_callback(status, pir_settings, publish_event):
     global publish_data_counter, publish_data_limit
 
+    current_timestamp = datetime.utcnow().isoformat()
+
     status_payload = {
         "measurement": "Motion",
         "simulated": pir_settings['simulated'],
         "runs_on": pir_settings["runs_on"],
         "name": pir_settings["name"],
-        "value": status # 0 ili 1
+        "value": status , # 0 ili 1,
+        "time": current_timestamp
     }
 
     with counter_lock:

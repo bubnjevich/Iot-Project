@@ -13,9 +13,12 @@ class DoorMembraneSwitchSimulator(threading.Thread):
 
     def run(self):
         while True:
-            for value in generate_value():
-                if self.running_flag:
-                    self.callback(value, self.settings, self.publish_event)
+            l = ""
+            for value in generate_value(): # salji input od 4 digit-a
+                l += value
+                if self.running_flag and len(l) == 4:
+                    self.callback(l, self.settings, self.publish_event)
+                    l = ""
                     time.sleep(1)
 
 def generate_value():

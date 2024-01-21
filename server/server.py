@@ -34,6 +34,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("Motion")
     client.subscribe("DoorStatus")
     client.subscribe("Distance")
+    client.subscribe("MembraneSwitch")
 
 mqtt_client.on_connect = on_connect
 mqtt_client.on_message = lambda client, userdata, msg: save_to_db(json.loads(msg.payload.decode('utf-8')))
@@ -99,6 +100,18 @@ def retrieve_aggregate_data():
     |> mean()"""
     return handle_influx_query(query)
 
+
+@app.route('/dht', methods=['GET'])
+def retrieve_dht_data():
+    query = f"""
+    
+  from(bucket: "{bucket}")
+  |> range(start: -6h)
+  |> filter(fn: (r) => r["_measurement"] == "Humidity" or r["_measurement"] == "Temperature")
+  |> mean()
+  
+  """
+    return handle_influx_query(query)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -7,7 +7,7 @@ import threading
 
 dl_batch = []
 publish_data_counter = 0
-publish_data_limit = 1
+publish_data_limit = 5
 counter_lock = threading.Lock()
 
 

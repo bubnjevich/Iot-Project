@@ -59,8 +59,7 @@ def start_threads(thread_list, output_queue, settings):
 	for key, device_settings in settings.items():
 		device_type = device_settings['device_type']
 		function_name = "run_" + device_type
-		if (device_type != "dht"):
-			continue
+
 
 		controller_function = globals().get(function_name)
 

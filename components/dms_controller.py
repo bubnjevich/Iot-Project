@@ -34,16 +34,16 @@ def dms_callback(dms_value, dms_settings, publish_event):
     # Current timestamp
     current_timestamp = datetime.utcnow().isoformat()
     payload = {
-        "measurement": "Character",
+        "measurement": "MembraneSwitch",
         "simulated": dms_settings['simulated'],
         "runs_on": dms_settings["runs_on"],
         "name": dms_settings["name"],
-        "value": dms_value,
+        "value": str(dms_value),
         "time": current_timestamp
     }
 
     with counter_lock:
-        dms_batch.append(('Character', json.dumps(payload), 0, True))
+        dms_batch.append(('MembraneSwitch', json.dumps(payload), 0, True))
         publish_data_counter += 1
 
     if publish_data_counter >= publish_data_limit:
@@ -51,7 +51,7 @@ def dms_callback(dms_value, dms_settings, publish_event):
 
 def run_dms(settings, threads_list, output_queue):
         if settings['simulated']:
-            dms_simulator = DoorMembraneSwitchSimulator(output_queue)
+            dms_simulator = DoorMembraneSwitchSimulator(output_queue, dms_callback, settings, publish_event)
             dms_simulator.start()
             threads_list.append(dms_simulator)
         else:

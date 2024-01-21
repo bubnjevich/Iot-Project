@@ -15,9 +15,9 @@ class DoorBuzzerSimulator(threading.Thread):
     def run(self):
         while True:
             if self.running_flag:
-                    #self.output_queue.put("Buzz")
-                    self.callback(1, self.settings, self.publish_event)
+                    self.output_queue.put("Buzz")
+                    #self.callback(1, self.settings, self.publish_event)
                     time.sleep(0.1)
-                    self.callback(1, self.settings, self.publish_event)
-                    time.sleep(0.1)
-                    self.callback(1, self.settings, self.publish_event)
+                    #self.callback(1, self.settings, self.publish_event)
+                    #time.sleep(0.1)
+                    #self.callback(1, self.settings, self.publish_event)

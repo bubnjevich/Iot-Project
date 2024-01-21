@@ -17,4 +17,4 @@ class MotionSensorSimulator(threading.Thread):
             if self.running_flag:
                 motion = random.choice(['Detected', 'Not Detected'])
                 self.callback(1 if motion == 'Detected' else 0, self.settings, self.publish_event)
-                time.sleep(1)
+                time.sleep(5)

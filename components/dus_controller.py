@@ -8,7 +8,7 @@ import threading
 
 dus_batch = []
 publish_data_counter = 0
-publish_data_limit = 1
+publish_data_limit = 5
 counter_lock = threading.Lock()
 
 
@@ -20,7 +20,7 @@ def publisher_task(event, dus_batch):
             local_dht_batch = dus_batch.copy()
             publish_data_counter = 0
             dus_batch.clear()
-        print(local_dht_batch)
+        #print(local_dht_batch)
         publish.multiple(local_dht_batch, hostname=HOSTNAME, port=PORT)
         print(f'published {publish_data_limit} dus values')
         event.clear()
