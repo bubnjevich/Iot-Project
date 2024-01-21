@@ -28,7 +28,7 @@ class DHTSimulator(threading.Thread):
     def __init__(self, output_queue, callback, settings, publish_event):
         super().__init__()
         self.output_queue = output_queue
-        self.running_flag = False
+        self.running_flag = True
         self.callback = callback
         self.settings = settings
         self.publish_event = publish_event
@@ -37,8 +37,6 @@ class DHTSimulator(threading.Thread):
         while True:
             for humidity, temperature in generate_values(10, 30):
                 if self.running_flag:
-                    code = 0
                     time.sleep(1)
                     self.callback(humidity, temperature, self.settings, self.publish_event)
-                    self.output_queue.put(generate_output(humidity, temperature, code))
                     

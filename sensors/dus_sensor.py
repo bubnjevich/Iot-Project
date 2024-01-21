@@ -7,12 +7,15 @@ except:
 	pass
 
 class UltrasonicDistanceSensor(threading.Thread):
-	def __init__(self, TRIG_PIN, ECHO_PIN, output_queue):
+	def __init__(self, TRIG_PIN, ECHO_PIN, settings, output_queue, callback, publish_event):
 		super().__init__()
 		self.TRIG_PIN = TRIG_PIN
 		self.ECHO_PIN = ECHO_PIN
 		self.output_queue = output_queue
-		self.running_flag = False
+		self.running_flag = True
+		self.callback = callback
+		self.publish_event = publish_event
+		self.settings = settings
 
 	def setup(self):
 		GPIO.setmode(GPIO.BCM)
@@ -53,7 +56,10 @@ class UltrasonicDistanceSensor(threading.Thread):
 			distance = self.get_distance()
 			if self.running_flag:
 				if distance is not None:
-					self.output_queue.put(f'Distance: {distance} cm')
+					#self.output_queue.put(f'Distance: {distance} cm')
+					self.callback(distance, self.settings, self.publish_event)
+					time.sleep(1)
 				else:
-					self.output_queue.put('Measurement timed out')
-				time.sleep(1)
+					self.callback("Measurement timed out", self.settings, self.publish_event)
+					#self.output_queue.put('Measurement timed out')
+					time.sleep(1)

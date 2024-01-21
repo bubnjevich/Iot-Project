@@ -1,9 +1,8 @@
-import random
 import threading
 import time
+import random
 
-
-class DoorSensorSimulator(threading.Thread):
+class GSGSimulator(threading.Thread):
     def __init__(self, output_queue, callback, settings, publish_event):
         super().__init__()
         self.output_queue = output_queue
@@ -14,7 +13,9 @@ class DoorSensorSimulator(threading.Thread):
 
     def run(self):
         while True:
+            # TODO: videti znacajan pomeraj
+            accel = [random.random() / 4, random.random() / 4, 9.81 + random.random() / 4]
+            gyro = [random.random() * 3.0, random.random() * 3.0, random.random() * 3.0]
             if self.running_flag:
-                status = random.choice(['Unlocked', 'Locked'])
-                self.callback(1 if status == 'Unlocked' else 0, self.settings, self.publish_event)
-                time.sleep(1)
+                self.callback(accel, gyro, self.settings, self.publish_event)
+            time.sleep(1) # 0.1
