@@ -34,7 +34,7 @@
         "simulated": true,
         "pin": 17,
         "runs_on": "PI1",
-        "name": "DB - MY_DPIR1"
+        "name": "DPIR1"
     },
     "DMS": {
         "device_type": "dms",

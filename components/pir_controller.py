@@ -22,7 +22,7 @@ def publisher_task(event, pir_batch):
             publish_data_counter = 0
             pir_batch.clear()
         publish.multiple(local_dht_batch, hostname=HOSTNAME, port=PORT)
-        print(f'published {publish_data_limit} pir values')
+        # print(f'published {publish_data_limit} pir values')
         event.clear()
 
 
@@ -31,8 +31,24 @@ publisher_thread = threading.Thread(target=publisher_task, args=(publish_event, 
 publisher_thread.daemon = True
 publisher_thread.start()
 
+threads_list_copy = []
+door_light_thread = None
+
 def pir_callback(status, pir_settings, publish_event):
     global publish_data_counter, publish_data_limit
+    global door_light_thread
+
+    if door_light_thread is None:
+        for thread in threads_list_copy:
+            if thread.name == 'DoorLightThread':
+                door_light_thread = thread
+
+    """ if motion is detected on DPIR1 turn on DL for 10 seconds"""
+    if pir_settings["name"] == "DPIR1" and status == 1:
+        door_light_thread.state = True
+
+
+
 
     current_timestamp = datetime.utcnow().isoformat()
 
@@ -53,12 +69,14 @@ def pir_callback(status, pir_settings, publish_event):
         publish_event.set()
 
 def run_pir(settings, threads_list, output_queue):
-        if settings['simulated']:
-            pir_simulator = MotionSensorSimulator(output_queue, pir_callback, settings, publish_event)
-            pir_simulator.start()
-            threads_list.append(pir_simulator)
-        else:
-            from sensors.pir_sensor import PIRMotionSensor
-            pir = PIRMotionSensor(settings['pin'], output_queue, pir_callback, settings, publish_event)
-            pir.start()
-            threads_list.append(pir)
+    global threads_list_copy
+    threads_list_copy = threads_list
+    if settings['simulated']:
+        pir_simulator = MotionSensorSimulator(output_queue, pir_callback, settings, publish_event)
+        pir_simulator.start()
+        threads_list.append(pir_simulator)
+    else:
+        from sensors.pir_sensor import PIRMotionSensor
+        pir = PIRMotionSensor(settings['pin'], output_queue, pir_callback, settings, publish_event)
+        pir.start()
+        threads_list.append(pir)

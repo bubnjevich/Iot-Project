@@ -20,7 +20,7 @@ def publisher_task(event, gsg_batch):
             gsg_batch.clear()
         #print(local_dht_batch)
         publish.multiple(local_gsg_batch, hostname=HOSTNAME, port=PORT)
-        print(f'published {publish_data_limit} gsg/accel values')
+        # print(f'published {publish_data_limit} gsg/accel values')
         event.clear()
 
 
