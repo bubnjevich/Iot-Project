@@ -14,6 +14,7 @@ class PIRMotionSensor(threading.Thread):
 		self.settings = settings
 		self.callback = callback
 		self.publish_event = publish_event
+		self.current_number = 0
 
 	def setup(self):
 		GPIO.setmode(GPIO.BCM)
@@ -32,7 +33,7 @@ class PIRMotionSensor(threading.Thread):
 		#  Čuvati brojno stanje osoba u objektu.
 		if self.running_flag:
 			#self.output_queue.put("DETECTED")
-			self.callback(1, self.settings, self.publish_event)
+			self.callback(1, self.settings, self.publish_event, self)
 
 
 	def no_motion(self, channel):

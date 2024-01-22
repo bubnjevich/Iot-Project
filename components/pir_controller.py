@@ -33,19 +33,37 @@ publisher_thread.start()
 
 threads_list_copy = []
 door_light_thread = None
+dus1_thread = None
+dus2_thread = None
 
-def pir_callback(status, pir_settings, publish_event):
+def pir_callback(status, pir_settings, publish_event, pir_thread):
     global publish_data_counter, publish_data_limit
-    global door_light_thread
+    global door_light_thread, dus1_thread, dus2_thread
 
-    if door_light_thread is None:
+    if door_light_thread is None or dus1_thread is None or dus2_thread is None:
         for thread in threads_list_copy:
             if thread.name == 'DoorLightThread':
                 door_light_thread = thread
+            elif thread.name == "DUS1":
+                dus1_thread = thread
+            elif thread.name == "DUS2":
+                dus2_thread = thread
 
-    """ if motion is detected on DPIR1 turn on DL for 10 seconds"""
+    """ if motion is detected on DPIR1 turn on DL for 10 seconds and check DUS1 """
     if pir_settings["name"] == "DPIR1" and status == 1:
         door_light_thread.state = True
+        if dus1_thread.last_distances[1] - dus1_thread.last_distances[0] > 0: # osoba izlazi iz objekta
+            pir_thread.current_number = max(0, pir_thread.current_number - 1)
+        else:
+            pir_thread.current_number += 1
+
+    elif pir_settings["name"] == "DPIR2" and status == 1:
+        if dus2_thread.last_distances[1] - dus2_thread.last_distances[0] > 0:  # osoba izlazi iz objekta
+            pir_thread.current_number = max(0, pir_thread.current_number - 1)
+        else:
+            pir_thread.current_number += 1
+
+
 
 
 

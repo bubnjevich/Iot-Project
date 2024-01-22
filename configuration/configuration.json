@@ -18,7 +18,7 @@
         "simulated": true,
         "pin": 17,
         "runs_on": "PI1",
-        "name": "DUS1 - Device DUS",
+        "name": "DUS1",
         "TRIG_PIN" : 23,
         "ECHO_PIN" : 24
     },
@@ -92,7 +92,7 @@
         "simulated": true,
         "pin": 17,
         "runs_on": "PI2",
-        "name": "Door Ultrasonic Sensor 2",
+        "name": "DUS2",
         "TRIG_PIN" : 23,
         "ECHO_PIN" : 24
     },
@@ -102,7 +102,7 @@
         "simulated": true,
         "pin": 17,
         "runs_on": "PI2",
-        "name": "Door Motion Sensor 2"
+        "name": "DPIR2"
     },
     "GDHT" : {
         "device_type": "dht",

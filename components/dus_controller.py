@@ -34,6 +34,8 @@ publisher_thread.start()
 def dus_callback(distance, dus_settings, publish_event):
     global publish_data_counter, publish_data_limit
 
+    # TODO
+
     current_timestamp = datetime.utcnow().isoformat()
 
     status_payload = {

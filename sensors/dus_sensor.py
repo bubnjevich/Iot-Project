@@ -8,7 +8,7 @@ except:
 
 class UltrasonicDistanceSensor(threading.Thread):
 	def __init__(self, TRIG_PIN, ECHO_PIN, settings, output_queue, callback, publish_event):
-		super().__init__()
+		super().__init__(name=settings["name"])
 		self.TRIG_PIN = TRIG_PIN
 		self.ECHO_PIN = ECHO_PIN
 		self.output_queue = output_queue
@@ -16,6 +16,7 @@ class UltrasonicDistanceSensor(threading.Thread):
 		self.callback = callback
 		self.publish_event = publish_event
 		self.settings = settings
+		self.last_distances = [120.]
 
 	def setup(self):
 		GPIO.setmode(GPIO.BCM)
@@ -56,6 +57,9 @@ class UltrasonicDistanceSensor(threading.Thread):
 			distance = self.get_distance()
 			if self.running_flag:
 				if distance is not None:
+					if len(self.last_distances) == 2:
+						self.last_distances.pop(0)
+					self.last_distances.append(distance)
 					#self.output_queue.put(f'Distance: {distance} cm')
 					self.callback(distance, self.settings, self.publish_event)
 					time.sleep(1)

@@ -11,10 +11,11 @@ class MotionSensorSimulator(threading.Thread):
         self.callback = callback
         self.settings = settings
         self.publish_event = publish_event
+        self.current_number = 0
 
     def run(self):
         while True:
             if self.running_flag:
                 motion = random.choice(['Detected', 'Not Detected'])
-                self.callback(1 if motion == 'Detected' else 0, self.settings, self.publish_event)
+                self.callback(1 if motion == 'Detected' else 0, self.settings, self.publish_event, self)
                 time.sleep(5)
