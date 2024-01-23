@@ -52,14 +52,14 @@ def get_device(menu, length):
 		
 
 def start_threads(thread_list, output_queue, settings, pi_number):
-	pi_items = settings.items()["PI" + pi_number]
-	for key, device_settings in pi_items:
-		print(device_settings["name"])
-		device_type = device_settings['device_type']
+	pi_items = settings.get("PI" + str(pi_number))
+	for device_settings in pi_items:
+		print(pi_items[device_settings]["name"])
+		device_type = pi_items[device_settings]['device_type']
 		function_name = "run_" + device_type
 		controller_function = globals().get(function_name)
 		if controller_function and callable(controller_function):
-			controller_function(device_settings, thread_list, output_queue)
+			controller_function(pi_items[device_settings], thread_list, output_queue)
 		else:
 			print(f"No controller function found for device type: {device_type}")
 

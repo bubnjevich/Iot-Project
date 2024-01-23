@@ -9,7 +9,7 @@
         },
         "DL": {
             "device_type": "dl",
-            "simulated": true,
+            "simulated": false,
             "port": 18,
             "runs_on": "PI1",
             "name": "DL - Device DL"
