@@ -1,6 +1,8 @@
 import random
 import threading
 import time
+import paho.mqtt.client as mqtt
+from broker_settings import HOSTNAME
 
 
 class MotionSensorSimulator(threading.Thread):
@@ -13,8 +15,12 @@ class MotionSensorSimulator(threading.Thread):
         self.publish_event = publish_event
 
     def run(self):
+        mqtt_client = mqtt.Client()
+        mqtt_client.connect(HOSTNAME, 1883, 60)
         while True:
             if self.running_flag:
                 motion = random.choice(['Detected', 'Not Detected'])
+                if(motion == "Detected" and (self.settings["name"] == "DB - MY_DPIR1" or self.settings["name"] == "Door Motion Sensor 2")):
+                    mqtt_client.publish("Light" + self.settings["runs_on"], motion)
                 self.callback(1 if motion == 'Detected' else 0, self.settings, self.publish_event)
                 time.sleep(5)

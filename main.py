@@ -11,6 +11,7 @@ from components.db_controller import run_db
 from components.gsg_controller import run_gsg
 from components.lcd_controller import run_lcd
 from components.four_sd_controller import run_4sd
+import sys
 
 
 try:
@@ -19,15 +20,6 @@ try:
 except:
 	pass
 
-
-def get_menu(settings):
-	menu = "IoT Device Menu:\n"
-	i = 1
-	for key, device_settings in settings.items():
-		device_name = device_settings['name']
-		menu += str(i) + ". " + device_name + "\n"
-		i += 1
-	return menu
 	
 def get_option():
 	while True:
@@ -59,44 +51,31 @@ def get_device(menu, length):
 			continue
 		
 
-def start_threads(thread_list, output_queue, settings):
-	for key, device_settings in settings.items():
+def start_threads(thread_list, output_queue, settings, pi_number):
+	pi_items = settings.items()["PI" + pi_number]
+	for key, device_settings in pi_items:
+		print(device_settings["name"])
 		device_type = device_settings['device_type']
 		function_name = "run_" + device_type
-
-
 		controller_function = globals().get(function_name)
-
 		if controller_function and callable(controller_function):
 			controller_function(device_settings, thread_list, output_queue)
 		else:
 			print(f"No controller function found for device type: {device_type}")
 
-def main():
+def main(pi_number):
 	output_queue = Queue()
 	settings = load_settings()
 	thread_list = []
-	menu= get_menu(settings)
-	start_threads(thread_list, output_queue, settings)
-	menu_flag = True
-	
-	while True:
-		try:
-			if menu_flag:
-				device_num = get_device(menu, len(settings.items()))
-				selected_thread = thread_list[device_num - 1]
-			else:
-				output = output_queue.get()
-				print(output)
-			time.sleep(1)
-		except KeyboardInterrupt:
-			menu_flag = True
-			while not output_queue.empty():
-				output = output_queue.get()
-			for thread in thread_list:
-				thread.running_flag = False
+	start_threads(thread_list, output_queue, settings, pi_number)
 		
 
 
 if __name__ == "__main__":
-	main()
+	if len(sys.argv) != 2:
+		print("Usage: python3 main.py [PI_NUMBER]")
+		sys.exit(1)
+
+	pi_number = sys.argv[1]
+	print(f"Running on Raspberry Pi number: {pi_number}")
+	main(pi_number)

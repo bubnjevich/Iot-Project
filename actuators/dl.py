@@ -2,6 +2,9 @@ from collections.abc import Callable, Iterable, Mapping
 import threading
 import time
 from typing import Any
+import paho.mqtt.client as mqtt
+import time
+from broker_settings import HOSTNAME
 try:
 	import RPi.GPIO as GPIO
 except:
@@ -19,13 +22,24 @@ class LED(threading.Thread):
         self.callback = callback
         self.publish_event = publish_event
 
+
     
     def setup(self):
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.port,GPIO.OUT)
+
+    def toggle_light(self):
+        self.state = True
+        time.sleep(10)
+        self.state = False
         
     def run(self):
         self.setup()
+        mqtt_client = mqtt.Client()
+        mqtt_client.connect(HOSTNAME, 1883, 60)
+        mqtt_client.loop_start()
+        mqtt_client.subscribe("LIGHT_" + self.settings["runs_on"])
+        mqtt_client.on_message = lambda client, userdata, message: self.toggle_light()
         while True:
             if self.running_flag:
                 state = 1

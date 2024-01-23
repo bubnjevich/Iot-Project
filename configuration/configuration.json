@@ -1,189 +1,182 @@
 {
-    "DS1": {
-        "device_type": "ds",
-        "simulated": true,
-        "port": 17,
-        "runs_on": "PI1",
-        "name": "DS1 - Hallway"
+    "PI1": {
+        "DS1": {
+            "device_type": "ds",
+            "simulated": true,
+            "port": 17,
+            "runs_on": "PI1",
+            "name": "DS1 - Hallway"
+        },
+        "DL": {
+            "device_type": "dl",
+            "simulated": true,
+            "port": 18,
+            "runs_on": "PI1",
+            "name": "DL - Device DL"
+        },
+        "DUS1": {
+            "device_type": "dus",
+            "simulated": true,
+            "pin": 17,
+            "runs_on": "PI1",
+            "name": "DUS1 - Device DUS",
+            "TRIG_PIN": 23,
+            "ECHO_PIN": 24
+        },
+        "DB": {
+            "device_type": "db",
+            "simulated": true,
+            "pin": 17,
+            "runs_on": "PI1",
+            "name": "DB - Device DB"
+        },
+        "DPIR1": {
+            "device_type": "pir",
+            "simulated": true,
+            "pin": 17,
+            "runs_on": "PI1",
+            "name": "DB - MY_DPIR1"
+        },
+        "DMS": {
+            "device_type": "dms",
+            "simulated": true,
+            "R1": 25,
+            "R2": 8,
+            "R3": 7,
+            "R4": 1,
+            "C1": 12,
+            "C2": 16,
+            "C3": 20,
+            "C4": 21,
+            "runs_on": "PI1",
+            "name": "DB - SMART_DMS"
+        },
+        "RPIR1": {
+            "device_type": "pir",
+            "simulated": true,
+            "pin": 17,
+            "runs_on": "PI2",
+            "name": "DB - SMART_RPIR1"
+        },
+        "RPIR2": {
+            "device_type": "pir",
+            "simulated": true,
+            "pin": 17,
+            "runs_on": "PI1",
+            "name": "DB - SMART RPIR2"
+        },
+        "RDHT1": {
+            "device_type": "dht",
+            "simulated": true,
+            "pin": 17,
+            "runs_on": "PI1",
+            "name": "DB - SMART RPIR5"
+        },
+        "RDHT2": {
+            "device_type": "dht",
+            "simulated": true,
+            "pin": 17,
+            "runs_on": "PI1",
+            "name": "DB - MY SMART RDHT2"
+        }
     },
-    "DL": {
-        "device_type": "dl",
-        "simulated": true,
-        "port": 18,
-        "runs_on": "PI1",
-        "name": "DL - Device DL"
+    "PI2": {
+        "DS2": {
+            "device_type": "ds",
+            "simulated": true,
+            "port": 17,
+            "runs_on": "PI2",
+            "name": "DS2 - Hallway 2"
+        },
+        "DUS2": {
+            "device_type": "dus",
+            "simulated": true,
+            "pin": 17,
+            "runs_on": "PI2",
+            "name": "Door Ultrasonic Sensor 2",
+            "TRIG_PIN": 23,
+            "ECHO_PIN": 24
+        },
+        "DPIR2": {
+            "device_type": "pir",
+            "simulated": true,
+            "pin": 17,
+            "runs_on": "PI2",
+            "name": "Door Motion Sensor 2"
+        },
+        "GDHT": {
+            "device_type": "dht",
+            "simulated": true,
+            "pin": 17,
+            "runs_on": "PI2",
+            "name": "Garage DHT"
+        },
+        "GLCD": {
+            "device_type": "lcd",
+            "simulated": true,
+            "runs_on": "PI2",
+            "name": "Garage LCD"
+        },
+        "GSG": {
+            "device_type": "gsg",
+            "simulated": true,
+            "runs_on": "PI2",
+            "name": "Gun Sage Gyro"
+        },
+        "RPIR3": {
+            "device_type": "pir",
+            "simulated": true,
+            "pin": 17,
+            "runs_on": "PI2",
+            "name": "Room PIR 3"
+        },
+        "RDHT3": {
+            "device_type": "dht",
+            "simulated": true,
+            "pin": 17,
+            "runs_on": "PI2",
+            "name": "Room DHT 3"
+        }
     },
-    "DUS1": {
-        "device_type": "dus",
-        "simulated": true,
-        "pin": 17,
-        "runs_on": "PI1",
-        "name": "DUS1 - Device DUS",
-        "TRIG_PIN" : 23,
-        "ECHO_PIN" : 24
-    },
-    "DB": {
-        "device_type": "db",
-        "simulated": true,
-        "pin": 17,
-         "runs_on": "PI1",
-        "name": "DB - Device DB"
-    },
-    "DPIR1": {
-        "device_type": "pir",
-        "simulated": true,
-        "pin": 17,
-        "runs_on": "PI1",
-        "name": "DB - MY_DPIR1"
-    },
-    "DMS": {
-        "device_type": "dms",
-        "simulated": true,
-        "R1" : 25,
-        "R2" : 8,
-        "R3" : 7,
-        "R4" : 1,
-        "C1" : 12,
-        "C2" : 16,
-        "C3" : 20,
-        "C4" : 21,
-        "runs_on": "PI1",
-        "name": "DB - SMART_DMS"
-    },
-    "RPIR1": {
-        "device_type": "pir",
-        "simulated": true,
-        "pin": 17,
-        "runs_on": "PI2",
-        "name": "DB - SMART_RPIR1"
-    },
-    "RPIR2": {
-        "device_type": "pir",
-        "simulated": true,
-        "pin": 17,
-         "runs_on": "PI1",
-        "name": "DB - SMART RPIR2"
-    },
-    "RDHT1": {
-        "device_type": "dht",
-        "simulated": true,
-        "pin": 17,
-        "runs_on": "PI1",
-        "name": "DB - SMART RPIR5"
-    },
-    "RDHT2": {
-        "device_type": "dht",
-        "simulated": true,
-        "pin": 17,
-         "runs_on": "PI1",
-        "name": "DB - MY SMART RDHT2"
-    },
-
-    "DS2": {
-        "device_type": "ds",
-        "simulated": true,
-        "port": 17,
-        "runs_on": "PI2",
-        "name": "DS2 - Hallway 2"
-    },
-
-    "DUS2": {
-        "device_type": "dus",
-        "simulated": true,
-        "pin": 17,
-        "runs_on": "PI2",
-        "name": "Door Ultrasonic Sensor 2",
-        "TRIG_PIN" : 23,
-        "ECHO_PIN" : 24
-    },
-
-    "DPIR2": {
-        "device_type": "pir",
-        "simulated": true,
-        "pin": 17,
-        "runs_on": "PI2",
-        "name": "Door Motion Sensor 2"
-    },
-    "GDHT" : {
-        "device_type": "dht",
-        "simulated": true,
-        "pin": 17,
-        "runs_on": "PI2",
-        "name": "Garage DHT"
-    },
-    
-    "GLCD" : {
-        "device_type": "lcd",
-        "simulated": true,
-        "runs_on": "PI2",
-        "name": "Garage LCD"
-    },
-
-    "GSG" : {
-        "device_type": "gsg",
-        "simulated": true,
-        "runs_on": "PI2",
-        "name": "Gun Sage Gyro"
-    },
-
-    "RPIR3": {
-        "device_type": "pir",
-        "simulated": true,
-        "pin": 17,
-         "runs_on": "PI2",
-        "name": "Room PIR 3"
-    },
-
-    "RDHT3": {
-        "device_type": "dht",
-        "simulated": true,
-        "pin": 17,
-        "runs_on": "PI2",
-        "name": "Room DHT 3"
-    },
-
-      "RPIR4": {
-        "device_type": "pir",
-        "simulated": true,
-        "pin": 17,
-        "runs_on": "PI3",
-        "name": "Room PIR 4"
-    },
-
-     "RDHT4": {
-        "device_type": "dht",
-        "simulated": true,
-        "pin": 17,
-        "runs_on": "PI3",
-        "name": "Room DHT 4"
-    },
-
-    "BB" : {
-        "device_type": "db",
-        "simulated": true,
-        "pin": 17,
-        "runs_on": "PI3",
-        "name": "Bedrom Buzzer"
-    },
-
-    "B4SD" : {
-        "device_type": "four_sd",
-        "simulated": true,
-        "runs_on": "PI3",
-        "name": "Bedroom 4 Digit 7 Segment Display"
-    },
-
-    "BIR" : {
-        "device_type": "ir",
-        "simulated": true,
-        "runs_on": "PI3",
-        "name": "Bedroom Infrared"
-    },
-
-    "BRGB" : {
-        "device_type": "rgb",
-        "simulated": true,
-        "runs_on": "PI3",
-        "name": "Bedroom RGB"
+    "PI3": {
+        "RPIR4": {
+            "device_type": "pir",
+            "simulated": true,
+            "pin": 17,
+            "runs_on": "PI3",
+            "name": "Room PIR 4"
+        },
+        "RDHT4": {
+            "device_type": "dht",
+            "simulated": true,
+            "pin": 17,
+            "runs_on": "PI3",
+            "name": "Room DHT 4"
+        },
+        "BB": {
+            "device_type": "db",
+            "simulated": true,
+            "pin": 17,
+            "runs_on": "PI3",
+            "name": "Bedrom Buzzer"
+        },
+        "B4SD": {
+            "device_type": "four_sd",
+            "simulated": true,
+            "runs_on": "PI3",
+            "name": "Bedroom 4 Digit 7 Segment Display"
+        },
+        "BIR": {
+            "device_type": "ir",
+            "simulated": true,
+            "runs_on": "PI3",
+            "name": "Bedroom Infrared"
+        },
+        "BRGB": {
+            "device_type": "rgb",
+            "simulated": true,
+            "runs_on": "PI3",
+            "name": "Bedroom RGB"
+        }
     }
 }
