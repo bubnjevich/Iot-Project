@@ -15,7 +15,7 @@ class LED(threading.Thread):
     def __init__(self, port, output_queue, callback, settings, publish_event): # port 18
         super().__init__()
         self.output_queue = output_queue
-        self.running_flag = False
+        self.running_flag = True
         self.port = port
         self.state = False
         self.settings = settings
@@ -29,8 +29,6 @@ class LED(threading.Thread):
 
     def toggle_light(self):
         self.state = True
-        time.sleep(10)
-        self.state = False
 
     def on_connect(self, client, userdata, flags, rc):
         # Subscribe to the topic on successful connection
@@ -40,21 +38,18 @@ class LED(threading.Thread):
     def run(self):
         self.setup()
         mqtt_client = mqtt.Client()
-        mqtt_client.connect(HOSTNAME, 9001, 60)
+        mqtt_client.connect(HOSTNAME, 1883, 60)
         mqtt_client.loop_start()
         mqtt_client.on_connect = self.on_connect
         mqtt_client.on_message = lambda client, userdata, message: self.toggle_light()
         while True:
             if self.running_flag:
-                state = 1
-                if not self.state:
-                     state = 0
-                self.callback(state, self.settings, self.publish_event)
-                #self.output_queue.put(f"Current Door Light State: {state}")
+                self.callback(self.state, self.settings, self.publish_event)
                 if self.state:
                     #GPIO.output(self.port,GPIO.HIGH)
                     print("RADIIIIIIIIIIIIIIIIIIIIIIIIIIII")
-                    pass
+                    time.sleep(10)
+                    self.state = False
                 else:
                     #GPIO.output(self.port,GPIO.LOW)
                     pass
