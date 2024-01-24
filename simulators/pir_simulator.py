@@ -46,11 +46,7 @@ class MotionSensorSimulator(threading.Thread): # PIR 1, PIR2, RPIR 1 - 4
                 "value": -1
             }
             if self.last_distances[1] - self.last_distances[0] > 0:  # osoba izlazi iz objekta
-                print("Osoba usla u objekta.... Saljem vrednosti [1]  sa  ", self.settings["name"])
                 status_payload["value"] = 1
-            else:
-                print("Osoba usla u objekta.... Saljem vrednosti [-1] sa  ", self.settings["name"])
-
             self.mqtt_client.publish("CurrentPeopleNumber", json.dumps(status_payload)) # salji na server
 
 

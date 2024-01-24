@@ -52,12 +52,8 @@ def save_to_db(data):
 
     if data["measurement"] == "NumberPeople":
         global current_people_number
-        print("Primljena vrednost ", data["value"], " sa ", data["name"])
-        print("Trenutno je osoba: ", current_people_number)
         if not (int(data["value"]) < 0 and current_people_number <= 0):
             current_people_number += int(data["value"])
-            print("Broj osoba je apdejtovan: ", current_people_number)
-
         point = (
             Point(data["measurement"])
             .tag("name", "Number of people in the house")
