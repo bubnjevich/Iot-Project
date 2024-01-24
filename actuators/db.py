@@ -1,6 +1,8 @@
 import threading
 import time
 from typing import Any
+import paho.mqtt.client as mqtt
+from broker_settings import HOSTNAME
 
 try:
 	import RPi.GPIO as GPIO
@@ -16,6 +18,16 @@ class Buzzer(threading.Thread):
 		self.settings = settings
 		self.callback = callback
 		self.publish_event = publish_event
+		self.alarm_list = []
+
+	def handle_alarm(self, data):
+		if data["start"]:
+			self.running_flag = True
+			self.alarm_list.append(data["type"])
+		else:
+			self.alarm_list.remove(data["type"])
+			if len(self.alarm_list) == 0:
+				self.running_flag = False   
 	
 	def setup(self):
 		GPIO.setmode(GPIO.BCM)
@@ -32,13 +44,19 @@ class Buzzer(threading.Thread):
 			time.sleep(delay)
 	
 	def run(self):
+		mqtt_client = mqtt.Client()
+		mqtt_client.connect(HOSTNAME, 1883, 60)
+		mqtt_client.loop_start()
+		mqtt_client.subscribe("Alarm")
+		mqtt_client.on_message = lambda client, userdata, message: self.handle_alarm(json.loads(message.payload.decode('utf-8')))
+
 		self.setup()
 		while True:
 			if self.running_flag:
 				pitch = 440
 				duration = 0.1
 				self.buzz(pitch, duration)
-				#self.callback(1, self.settings, self.publish_event)
+				self.callback(1, self.settings, self.publish_event)
 				self.running_flag = False
 				time.sleep(1)
 

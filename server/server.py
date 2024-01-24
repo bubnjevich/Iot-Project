@@ -45,48 +45,71 @@ mqtt_client.on_message = lambda client, userdata, msg: save_to_db(json.loads(msg
 
 
 def save_to_db(data):
-    print(data)
     write_api = influxdb_client.write_api(write_options=SYNCHRONOUS)
-    if data["measurement"] == "Acceleration":
-        time = data["time"]
-        point = (
-            Point(data["measurement"])
-            .tag("simulated", data["simulated"])
-            .tag("runs_on", data["runs_on"])
-            .tag("name", data["name"])
-            .time(time)
-            .field("Ax", data["accel"]["Ax"])
-            .field("Ay", data["accel"]["Ay"])
-            .field("Az", data["accel"]["Az"])
-        )
+    if data["measurement"] == "Alarm":
+        point = handle_alarms(data)
+        write_api.write(bucket=bucket, org=org, record=point)
+    elif data["measurement"] == "Acceleration":
+        point = handle_acceleration(data)
         write_api.write(bucket=bucket, org=org, record=point)
     elif data["measurement"] == "Rotation":
-        time = data["time"]
-        point = (
-            Point(data["measurement"])
-            .tag("simulated", data["simulated"])
-            .tag("runs_on", data["runs_on"])
-            .tag("name", data["name"])
-            .time(time)
-            .field("Gx", data["gyro"]["Gx"])
-            .field("Gy", data["gyro"]["Gy"])
-            .field("Gz", data["gyro"]["Gz"])
-        )
+        point = handle_rotation(data)
         write_api.write(bucket=bucket, org=org, record=point)
     else:
-        time = data["time"]
-        point = (
-            Point(data["measurement"])
-            .tag("simulated", data["simulated"])
-            .tag("runs_on", data["runs_on"])
-            .tag("name", data["name"])
-            .time(time)
-            .field("measurement", data["value"])
-        )
+        point = handle_other_data(data)
         write_api.write(bucket=bucket, org=org, record=point)
 
-    
+def handle_alarms(data):
+    time = data["time"]
+    point = (
+        Point(data["measurement"])
+        .tag("alarm_name", data["simulated"])
+        .tag("device_name", data["device_name"])
+        .tag("type", data["type"])
+        .field("start", data["start"])
+        .time(time)
+    )
+    return point
 
+def handle_acceleration(data): 
+    time = data["time"]
+    point = (
+        Point(data["measurement"])
+        .tag("simulated", data["simulated"])
+        .tag("runs_on", data["runs_on"])
+        .tag("name", data["name"])
+        .time(time)
+        .field("Ax", data["accel"]["Ax"])
+        .field("Ay", data["accel"]["Ay"])
+        .field("Az", data["accel"]["Az"])
+    )
+    return point
+
+def handle_rotation(data):
+    time = data["time"]
+    point = (
+        Point(data["measurement"])
+        .tag("simulated", data["simulated"])
+        .tag("runs_on", data["runs_on"])
+        .tag("name", data["name"])
+        .time(time)
+        .field("Gx", data["gyro"]["Gx"])
+        .field("Gy", data["gyro"]["Gy"])
+        .field("Gz", data["gyro"]["Gz"])
+    )
+    return point
+
+def handle_other_data(data):
+    time = data["time"]
+    point = (
+        Point(data["measurement"])
+        .tag("simulated", data["simulated"])
+        .tag("runs_on", data["runs_on"])
+        .tag("name", data["name"])
+        .time(time)
+        .field("measurement", data["value"])
+    )
+    return point
 
 # Route to store dummy data
 @app.route('/store_data', methods=['POST'])

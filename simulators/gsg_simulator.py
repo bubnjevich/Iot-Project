@@ -1,6 +1,10 @@
 import threading
 import time
 import random
+import paho.mqtt.client as mqtt
+from broker_settings import HOSTNAME
+from datetime import datetime
+
 
 class GSGSimulator(threading.Thread):
     def __init__(self, output_queue, callback, settings, publish_event):
@@ -10,12 +14,46 @@ class GSGSimulator(threading.Thread):
         self.callback = callback
         self.settings = settings
         self.publish_event = publish_event
+        self.is_moving = False
+    
+    def simulate_gyroscope(self):
+        stationary_gyro = lambda: random.uniform(-0.5, 0.5)
+        movement_gyro = lambda: random.uniform(-90, 90)
+        if self.is_moving:
+            return [movement_gyro(), movement_gyro(), movement_gyro()]
+        else:
+            return [stationary_gyro(), stationary_gyro(), stationary_gyro()]
+
+    def simulate_acceleration(self):
+        stationary_accel = lambda: random.uniform(-0.1, 0.1)
+        movement_accel = lambda: random.uniform(-2, 2)
+        if self.is_moving:
+            return [movement_accel(), movement_accel(), 9.81 + movement_accel()]
+        else:
+            return [stationary_accel(), stationary_accel(), 9.81]
+
+    def handle_alarm(self, mqtt_client):
+        current_timestamp = datetime.utcnow().isoformat()
+        status_payload = {
+            "measurement": "Alarm",
+            "alarm_name": "Gyroscope " + self.settings["runs_on"],
+            "device_name" : self.settings["name"],
+            "type": "DS" + self.settings["runs_on"],
+            "start" : 1,
+            "time" : current_timestamp
+        }
+        mqtt_client.publish("Alarm", status_payload)
 
     def run(self):
+        mqtt_client = mqtt.Client()
+        mqtt_client.connect(HOSTNAME, 1883, 60)
+        mqtt_client.loop_start()
         while True:
-            # TODO: videti znacajan pomeraj
-            accel = [random.random() / 4, random.random() / 4, 9.81 + random.random() / 4]
-            gyro = [random.random() * 3.0, random.random() * 3.0, random.random() * 3.0]
-            if self.running_flag:
-                self.callback(accel, gyro, self.settings, self.publish_event)
-            time.sleep(1) # 0.1
+            self.is_moving = random.random() < 0.05
+            gyro = self.simulate_gyroscope()
+            accel = self.simulate_acceleration()
+            if self.is_moving:
+                self.handle_alarm( mqtt_client)
+            self.callback(accel, gyro, self.settings, self.publish_event)
+            time.sleep(1)
+            
