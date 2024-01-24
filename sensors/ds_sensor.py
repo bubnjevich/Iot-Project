@@ -20,14 +20,12 @@ class Button(threading.Thread):
 		GPIO.setmode(GPIO.BCM)
 		GPIO.setup(self.port, GPIO.IN, pull_up_down = GPIO.PUD_UP)
 		GPIO.add_event_detect(self.port, GPIO.RISING, callback = self.button_pressed, bouncetime = 100)
-		GPIO.add_event_detect(self.pin, GPIO.FALLING, callback=self.button_released)
+		GPIO.add_event_detect(self.port, GPIO.FALLING, callback=self.button_released)
 
 	def button_pressed(self, event):
 		if self.running_flag:
-			self.callback("Unlocked", self.settings, self.publish_event)
-			#self.output_queue.put("Unlocked") 
+			self.callback(1, self.settings, self.publish_event)
 
-	def button_pressed(self, event):
+	def button_released(self, event):
 		if self.running_flag:
-			self.callback("Locked", self.settings, self.publish_event)
-			#self.output_queue.put("Unlocked") 
+			self.callback(0, self.settings, self.publish_event)

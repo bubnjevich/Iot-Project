@@ -37,6 +37,8 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("MembraneSwitch")
     client.subscribe("Acceleration")
     client.subscribe("Rotation")
+    client.subscribe("Alarm")
+    #client.subscribe("LIGHT_PI1")
 
 mqtt_client.on_connect = on_connect
 mqtt_client.on_message = lambda client, userdata, msg: save_to_db(json.loads(msg.payload.decode('utf-8')))
