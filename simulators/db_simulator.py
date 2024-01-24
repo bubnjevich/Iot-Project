@@ -10,7 +10,7 @@ class DoorBuzzerSimulator(threading.Thread):
     def __init__(self, output_queue, callback, settings, publish_event):
         super().__init__()
         self.output_queue = output_queue
-        self.running_flag = True
+        self.running_flag = False
         self.callback = callback
         self.settings = settings
         self.publish_event = publish_event
@@ -33,8 +33,9 @@ class DoorBuzzerSimulator(threading.Thread):
         mqtt_client.on_message = lambda client, userdata, message: self.handle_alarm(json.loads(message.payload.decode('utf-8')))
         while True:
             if self.running_flag:
-                    self.callback(1, self.settings, self.publish_event)
-                    time.sleep(0.1)
-                    self.callback(1, self.settings, self.publish_event)
-                    time.sleep(0.1)
-                    self.callback(1, self.settings, self.publish_event)
+                print("Buzz buzz buzz...")
+                self.callback(1, self.settings, self.publish_event)
+                time.sleep(0.1)
+                self.callback(1, self.settings, self.publish_event)
+                time.sleep(0.1)
+                self.callback(1, self.settings, self.publish_event)

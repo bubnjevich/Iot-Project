@@ -27,6 +27,7 @@ influxdb_client = InfluxDBClient(url=url, token=token, org=org)
 mqtt_client = mqtt.Client()
 mqtt_client.connect("localhost", 1883, 60)
 mqtt_client.loop_start()
+current_people_number = 0   # inicjalno nema nikoga u kuci
 
 def on_connect(client, userdata, flags, rc):
     client.subscribe("Temperature")
@@ -38,7 +39,8 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("Acceleration")
     client.subscribe("Rotation")
     client.subscribe("Alarm")
-    #client.subscribe("LIGHT_PI1")
+    client.subscribe("CurrentPeopleNumber") # sacuvaj trenutan broj ljudi
+
 
 mqtt_client.on_connect = on_connect
 mqtt_client.on_message = lambda client, userdata, msg: save_to_db(json.loads(msg.payload.decode('utf-8')))
@@ -55,10 +57,14 @@ def save_to_db(data):
     elif data["measurement"] == "Rotation":
         point = handle_rotation(data)
         write_api.write(bucket=bucket, org=org, record=point)
+    elif data["measurement"] == "NumberPeople":
+        point = handle_people(data)
+        write_api.write(bucket=bucket, org=org, record=point)
     else:
         point = handle_other_data(data)
         write_api.write(bucket=bucket, org=org, record=point)
 
+        
 def handle_alarms(data):
     time = data["time"]
     point = (
@@ -68,6 +74,19 @@ def handle_alarms(data):
         .tag("type", data["type"])
         .field("start", data["start"])
         .time(time)
+    )
+    return point
+
+def handle_people(data):
+    time = data["time"]
+    global current_people_number
+    if not (int(data["value"]) < 0 and current_people_number <= 0):
+        current_people_number += int(data["value"])
+    point = (
+        Point(data["measurement"])
+        .tag("name", "Number of people in the house")
+        .time(time)
+        .field("measurement", current_people_number)
     )
     return point
 

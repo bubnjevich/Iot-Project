@@ -158,7 +158,7 @@
             "simulated": true,
             "pin": 17,
             "runs_on": "PI3",
-            "name": "Bedrom Buzzer"
+            "name": "Bedroom Buzzer"
         },
         "B4SD": {
             "device_type": "four_sd",
