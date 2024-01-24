@@ -4,7 +4,7 @@ import time
 from datetime import datetime
 import paho.mqtt.client as mqtt
 from broker_settings import HOSTNAME
-
+import json
 
 class DoorSensorSimulator(threading.Thread):
     def __init__(self, output_queue, callback, settings, publish_event):
@@ -28,7 +28,9 @@ class DoorSensorSimulator(threading.Thread):
             "start" : True,
             "time" : current_timestamp
         }
-        mqtt_client.publish("Alarm", status_payload)
+        # TODO:
+        # alarm = [].append(('Alarm', json.dumps(status_payload), 0, True))
+        # mqtt_client.publish("Alarm", alarm)
 
     def run(self):
         mqtt_client = mqtt.Client()
@@ -36,7 +38,8 @@ class DoorSensorSimulator(threading.Thread):
         mqtt_client.loop_start()
         while True:
             if self.running_flag:
-                status = random.choice(1, 0) # 1 = "Unlocked", 0 = "Locked"
+                import random
+                status = random.choice((1, 0))  # 1 = "Unlocked", 0 = "Locked"
                 if status:
                     self.locked_counter += 1
                     if self.locked_counter == 5:

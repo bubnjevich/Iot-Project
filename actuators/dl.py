@@ -47,7 +47,6 @@ class LED(threading.Thread):
                 self.callback(self.state, self.settings, self.publish_event)
                 if self.state:
                     #GPIO.output(self.port,GPIO.HIGH)
-                    print("RADIIIIIIIIIIIIIIIIIIIIIIIIIIII")
                     time.sleep(10)
                     self.state = False
                 else:
