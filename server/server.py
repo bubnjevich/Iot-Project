@@ -27,6 +27,7 @@ influxdb_client = InfluxDBClient(url=url, token=token, org=org)
 mqtt_client = mqtt.Client()
 mqtt_client.connect("localhost", 1883, 60)
 mqtt_client.loop_start()
+current_people_number = 0   # inicjalno nema nikoga
 
 def on_connect(client, userdata, flags, rc):
     client.subscribe("Temperature")
@@ -38,6 +39,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("Acceleration")
     client.subscribe("Rotation")
     client.subscribe("Alarm")
+    client.subscribe("CurrentPeopleNumber") # sacuvaj trenutan broj ljudi
 
 
 mqtt_client.on_connect = on_connect
@@ -45,10 +47,28 @@ mqtt_client.on_message = lambda client, userdata, msg: save_to_db(json.loads(msg
 
 
 def save_to_db(data):
-    print(data)
     write_api = influxdb_client.write_api(write_options=SYNCHRONOUS)
+    time = data["time"]
+
+    if data["measurement"] == "NumberPeople":
+        global current_people_number
+        print("Primljena vrednost ", data["value"], " sa ", data["name"])
+        print("Trenutno je osoba: ", current_people_number)
+        if not (int(data["value"]) < 0 and current_people_number <= 0):
+            current_people_number += int(data["value"])
+            print("Broj osoba je apdejtovan: ", current_people_number)
+
+        point = (
+            Point(data["measurement"])
+            .tag("name", "Number of people in the house")
+            .time(time)
+            .field("measurement", current_people_number)
+        )
+        write_api.write(bucket=bucket, org=org, record=point)
+        return
+
+
     if data["measurement"] == "Acceleration":
-        time = data["time"]
         point = (
             Point(data["measurement"])
             .tag("simulated", data["simulated"])
@@ -61,7 +81,6 @@ def save_to_db(data):
         )
         write_api.write(bucket=bucket, org=org, record=point)
     elif data["measurement"] == "Rotation":
-        time = data["time"]
         point = (
             Point(data["measurement"])
             .tag("simulated", data["simulated"])
@@ -74,7 +93,6 @@ def save_to_db(data):
         )
         write_api.write(bucket=bucket, org=org, record=point)
     else:
-        time = data["time"]
         point = (
             Point(data["measurement"])
             .tag("simulated", data["simulated"])

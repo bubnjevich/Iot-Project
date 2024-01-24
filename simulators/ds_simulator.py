@@ -40,7 +40,7 @@ class DoorSensorSimulator(threading.Thread):
             if self.running_flag:
                 import random
                 status = random.choice((1, 0))  # 1 = "Unlocked", 0 = "Locked"
-                if status:
+                if status: # status == 1
                     self.locked_counter += 1
                     if self.locked_counter == 5:
                         self.start_alarm(mqtt_client)

@@ -5,6 +5,7 @@ from broker_settings import HOSTNAME, PORT
 import paho.mqtt.publish as publish
 import json
 from datetime import datetime
+import paho.mqtt.client as mqtt
 
 
 pir_batch = []
@@ -52,7 +53,12 @@ def pir_callback(status, pir_settings, publish_event):
     if publish_data_counter >= publish_data_limit:
         publish_event.set()
 
+
+
 def run_pir(settings, threads_list, output_queue):
+
+
+
         if settings['simulated']:
             pir_simulator = MotionSensorSimulator(output_queue, pir_callback, settings, publish_event)
             pir_simulator.start()

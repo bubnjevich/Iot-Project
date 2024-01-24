@@ -22,7 +22,7 @@ class DoorUltrasonicSensorSimulator(threading.Thread):
         while True:
             if self.running_flag:
                 distance = round(random.uniform(1, 100), 2)
-                #print("SALJEM DISTANCU: ", distance, "  sa ", self.settings["name"])
+                # print("SALJEM DISTANCU: ", distance, "  sa ", self.settings["name"])
                 if self.settings["name"] == "DUS1 - Device DUS":
                    mqtt_client.publish("DUS1", distance)
                 elif self.settings["name"] == "Door Ultrasonic Sensor 2":
