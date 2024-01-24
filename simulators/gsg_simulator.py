@@ -2,6 +2,7 @@ import threading
 import time
 import random
 import paho.mqtt.client as mqtt
+import json
 from broker_settings import HOSTNAME
 from datetime import datetime
 
@@ -42,7 +43,7 @@ class GSGSimulator(threading.Thread):
             "start" : 1,
             "time" : current_timestamp
         }
-        mqtt_client.publish("Alarm", status_payload)
+        mqtt_client.publish("Alarm", json.dumps(status_payload))
 
     def run(self):
         mqtt_client = mqtt.Client()

@@ -1,11 +1,15 @@
 from flask import Flask, jsonify, request
 from influxdb_client import InfluxDBClient, Point
+from flask_socketio import SocketIO, emit
 from influxdb_client.client.write_api import SYNCHRONOUS
 import paho.mqtt.client as mqtt
 import json
+from congif import *
 
 
 app = Flask(__name__)
+socketio = SocketIO(app, cors_allowed_origins="*")  # Dodajte opcionalno cors_allowed_origins ako imate problema sa CORS
+
 
 
 # InfluxDB Configuration
@@ -29,6 +33,24 @@ mqtt_client.connect("localhost", 1883, 60)
 mqtt_client.loop_start()
 current_people_number = 0   # inicjalno nema nikoga u kuci
 
+
+# alert alarm on Door Buzzer [PI1]
+if HOSTNAME_PI1 == "localhost":
+  mqtt_client_db = mqtt_client
+else:
+    mqtt_client_db = mqtt.Client()
+    mqtt_client_db.connect(HOSTNAME_PI1, 1883, 60)
+    mqtt_client_db.loop_start()
+
+# alert alarm on Bedroom Buzzer [PI3]
+if HOSTNAME_PI3 == "localhost":
+  mqtt_client_bb = mqtt_client
+else:
+    mqtt_client_bb = mqtt.Client()
+    mqtt_client_bb.connect(HOSTNAME_PI3, 1883, 60)
+    mqtt_client_bb.loop_start()
+
+
 def on_connect(client, userdata, flags, rc):
     client.subscribe("Temperature")
     client.subscribe("Humidity")
@@ -48,6 +70,7 @@ mqtt_client.on_message = lambda client, userdata, msg: save_to_db(json.loads(msg
 
 def save_to_db(data):
     write_api = influxdb_client.write_api(write_options=SYNCHRONOUS)
+
     if data["measurement"] == "Alarm":
         point = handle_alarms(data)
         write_api.write(bucket=bucket, org=org, record=point)
@@ -66,10 +89,18 @@ def save_to_db(data):
 
         
 def handle_alarms(data):
+
+    mqtt_client_db.publish("AlarmAlerted", json.dumps(data))
+    socketio.emit('alarm_detected', json.dumps(data), broadcast=True)
+
+    if HOSTNAME_PI1 != HOSTNAME_PI3:
+        mqtt_client_bb.publish("AlarmAlerted", json.dumps(data))
+
+
     time = data["time"]
     point = (
         Point(data["measurement"])
-        .tag("alarm_name", data["simulated"])
+        .tag("alarm_name", data["alarm_name"])
         .tag("device_name", data["device_name"])
         .tag("type", data["type"])
         .field("start", data["start"])
@@ -186,4 +217,4 @@ def retrieve_dht_data():
     return handle_influx_query(query)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app, debug=True, allow_unsafe_werkzeug=True)  # Postavite odgovarajući port za soket konekciju

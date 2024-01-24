@@ -11,7 +11,7 @@ class DoorBuzzerSimulator(threading.Thread):
         super().__init__()
         self.output_queue = output_queue
         self.running_flag = False
-        self.system_active = False
+        self.system_active = True
         self.callback = callback
         self.settings = settings
         self.publish_event = publish_event
@@ -40,29 +40,28 @@ class DoorBuzzerSimulator(threading.Thread):
 
         if self.system_active:
             if data["start"]: # ako je aktivan sistem i treba da se upali alarm
-                # print("Sistem je aktivan i palim alarm zbor promene DS-a")
+                #print("Sistem je aktivan i palim alarm zbor promene DS-a")
                 self.running_flag = True
                 self.alarm_list.append(data["type"])
 
             if not data["start"]:
-                # print("Gasim jedan od alarma...")
+                #print("Gasim jedan od alarma...")
                 if len(self.alarm_list) != 0:
                     self.alarm_list.remove(data["type"])
                 if len(self.alarm_list) == 0:
-                    # print("Gasim alarme jer ih vise nema...")
+                    #print("Gasim alarme jer ih vise nema...")
                     self.running_flag = False
 
     def run(self):
         mqtt_client = mqtt.Client()
         mqtt_client.connect(HOSTNAME, 1883, 60)
         mqtt_client.loop_start()
-        mqtt_client.subscribe("Alarm")
-        mqtt_client.subscribe("DMS")
+        mqtt_client.subscribe("AlarmAlerted")
+
 
         mqtt_client.on_message = lambda client, userdata, message: self.handle_alarm(json.loads(message.payload.decode('utf-8')))
         while True:
             if self.running_flag:
-                print("Buzz buzz buzz...")
                 self.callback(1, self.settings, self.publish_event)
                 time.sleep(0.1)
                 self.callback(1, self.settings, self.publish_event)

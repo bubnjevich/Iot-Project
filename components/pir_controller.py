@@ -1,7 +1,7 @@
 from simulators.pir_simulator import MotionSensorSimulator
 import threading
 from simulators.ds_simulator import DoorSensorSimulator
-from broker_settings import HOSTNAME, PORT
+from broker_settings import HOSTNAME, PORT, SERVER_IP
 import paho.mqtt.publish as publish
 import json
 from datetime import datetime
@@ -22,8 +22,8 @@ def publisher_task(event, pir_batch):
             local_dht_batch = pir_batch.copy()
             publish_data_counter = 0
             pir_batch.clear()
-        publish.multiple(local_dht_batch, hostname=HOSTNAME, port=PORT)
-        print(f'published {publish_data_limit} pir values')
+        publish.multiple(local_dht_batch, hostname=SERVER_IP, port=PORT)
+        #print(f'published {publish_data_limit} pir values')
         event.clear()
 
 

@@ -2,7 +2,7 @@ import threading
 import time
 from datetime import datetime
 from simulators.ds_simulator import DoorSensorSimulator
-from broker_settings import HOSTNAME, PORT
+from broker_settings import HOSTNAME, PORT, SERVER_IP
 import paho.mqtt.publish as publish
 import json
 
@@ -21,7 +21,7 @@ def publisher_task(event, ds_batch):
             local_ds_batch = ds_batch.copy()
             publish_data_counter = 0
             ds_batch.clear()
-        publish.multiple(local_ds_batch, hostname=HOSTNAME, port=PORT)
+        publish.multiple(local_ds_batch, hostname=SERVER_IP, port=PORT)
         print(f'published {publish_data_limit} ds values')
         event.clear()
 

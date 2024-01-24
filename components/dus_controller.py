@@ -1,5 +1,5 @@
 from simulators.dus_simulator import DoorUltrasonicSensorSimulator
-from broker_settings import HOSTNAME, PORT
+from broker_settings import HOSTNAME, PORT, SERVER_IP
 import paho.mqtt.publish as publish
 import json
 from datetime import datetime
@@ -21,7 +21,7 @@ def publisher_task(event, dus_batch):
             publish_data_counter = 0
             dus_batch.clear()
         #print(local_dht_batch)
-        publish.multiple(local_dht_batch, hostname=HOSTNAME, port=PORT)
+        publish.multiple(local_dht_batch, hostname=SERVER_IP, port=PORT)
         print(f'published {publish_data_limit} dus values')
         event.clear()
 

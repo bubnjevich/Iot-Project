@@ -3,7 +3,7 @@ import threading
 import time
 from datetime import datetime
 import paho.mqtt.client as mqtt
-from broker_settings import HOSTNAME
+from broker_settings import HOSTNAME, SERVER_IP
 import json
 
 class DoorSensorSimulator(threading.Thread):
@@ -32,6 +32,7 @@ class DoorSensorSimulator(threading.Thread):
         pass
 
     def start_alarm(self, mqtt_client):
+        print("saljem na server....")
         current_timestamp = datetime.utcnow().isoformat()
         status_payload = {
             "measurement": "Alarm",
@@ -46,7 +47,7 @@ class DoorSensorSimulator(threading.Thread):
 
     def run(self):
         mqtt_client = mqtt.Client()
-        mqtt_client.connect(HOSTNAME, 1883, 60)
+        mqtt_client.connect(SERVER_IP, 1883, 60)
         mqtt_client.loop_start()
         while True:
             if self.running_flag:

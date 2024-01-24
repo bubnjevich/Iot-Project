@@ -1,4 +1,4 @@
-from broker_settings import HOSTNAME, PORT
+from broker_settings import HOSTNAME, PORT, SERVER_IP
 import paho.mqtt.publish as publish
 import json
 from datetime import datetime
@@ -19,8 +19,8 @@ def publisher_task(event, gsg_batch):
             publish_data_counter = 0
             gsg_batch.clear()
         #print(local_dht_batch)
-        publish.multiple(local_gsg_batch, hostname=HOSTNAME, port=PORT)
-        print(f'published {publish_data_limit} gsg/accel values')
+        publish.multiple(local_gsg_batch, hostname=SERVER_IP, port=PORT)
+        #print(f'published {publish_data_limit} gsg/accel values')
         event.clear()
 
 

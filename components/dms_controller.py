@@ -2,7 +2,7 @@ import threading
 import json
 from datetime import datetime
 import paho.mqtt.publish as publish
-from broker_settings import HOSTNAME, PORT
+from broker_settings import HOSTNAME, PORT, SERVER_IP
 from simulators.dms_simulator import DoorMembraneSwitchSimulator
 
 dms_batch = []
@@ -18,7 +18,7 @@ def publisher_task(event, dht_batch):
             local_dht_batch = dht_batch.copy()
             publish_data_counter = 0
             dht_batch.clear()
-        publish.multiple(local_dht_batch, hostname=HOSTNAME, port=PORT)
+        publish.multiple(local_dht_batch, hostname=SERVER_IP, port=PORT)
         print(f'published {publish_data_limit} dms values')
         event.clear()
 
