@@ -11,6 +11,7 @@ class DoorSensorSimulator(threading.Thread):
         super().__init__()
         self.output_queue = output_queue
         self.running_flag = True
+        self.alarm_system_active = True  # sistem alarma inicijalno upaljen
         self.callback = callback
         self.settings = settings
         self.publish_event = publish_event
@@ -54,12 +55,10 @@ class DoorSensorSimulator(threading.Thread):
                 if status: # status == 1
                     self.locked_counter += 1
                     if self.locked_counter == 2:
-                        print("STARTUJEM ALARM.....")
                         self.start_alarm(mqtt_client)
                 else:
                     if self.locked_counter >= 2:
-                        print("STOPIRAM ALARM.....")
                         self.stop_alarm(mqtt_client)
                     self.locked_counter = 0
                 self.callback(status, self.settings, self.publish_event)
-                time.sleep(1)
+                time.sleep(2)

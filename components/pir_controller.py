@@ -57,8 +57,6 @@ def pir_callback(status, pir_settings, publish_event):
 
 def run_pir(settings, threads_list, output_queue):
 
-
-
         if settings['simulated']:
             pir_simulator = MotionSensorSimulator(output_queue, pir_callback, settings, publish_event)
             pir_simulator.start()
