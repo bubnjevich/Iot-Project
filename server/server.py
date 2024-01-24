@@ -27,7 +27,7 @@ influxdb_client = InfluxDBClient(url=url, token=token, org=org)
 mqtt_client = mqtt.Client()
 mqtt_client.connect("localhost", 1883, 60)
 mqtt_client.loop_start()
-current_people_number = 0   # inicjalno nema nikoga
+current_people_number = 0   # inicjalno nema nikoga u kuci
 
 def on_connect(client, userdata, flags, rc):
     client.subscribe("Temperature")
@@ -50,7 +50,11 @@ def save_to_db(data):
     write_api = influxdb_client.write_api(write_options=SYNCHRONOUS)
     time = data["time"]
 
+    if data["measurement"] == "Alarm":
+        return
+
     if data["measurement"] == "NumberPeople":
+        # neko je izasao ili usao kucu
         global current_people_number
         if not (int(data["value"]) < 0 and current_people_number <= 0):
             current_people_number += int(data["value"])
