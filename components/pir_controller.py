@@ -1,6 +1,7 @@
 from simulators.pir_simulator import MotionSensorSimulator
 import threading
-from broker_settings import HOSTNAME, PORT
+from simulators.ds_simulator import DoorSensorSimulator
+from broker_settings import HOSTNAME, PORT, SERVER_IP
 import paho.mqtt.publish as publish
 import json
 from datetime import datetime

@@ -38,7 +38,9 @@ def get_option():
 
 def get_device(menu, length):
 	while True:
-		print(menu)
+		for i in menu:
+			print(str(i) + ") ", menu[i])
+
 		try:
 			choice = int(input("Enter the number of the IoT device (Ctrl+C to exit): "))
 			if  0 > choice > length:
@@ -49,26 +51,44 @@ def get_device(menu, length):
 		except:
 			print("Bad input")
 			continue
-		
+
 
 def start_threads(thread_list, output_queue, settings, pi_number):
+	menu = {}
+	devices_queues = {}
+	i = 1
 	pi_items = settings.get("PI" + str(pi_number))
 	for device_settings in pi_items:
-		print(pi_items[device_settings]["name"])
+		menu[i] = pi_items[device_settings]["name"]
+		devices_queues[i]  = Queue()
+
+		# print(pi_items[device_settings]["name"])
 		device_type = pi_items[device_settings]['device_type']
 		function_name = "run_" + device_type
 		controller_function = globals().get(function_name)
 		if controller_function and callable(controller_function):
-			controller_function(pi_items[device_settings], thread_list, output_queue)
+			controller_function(pi_items[device_settings], thread_list, devices_queues[i])
+			i += 1
 		else:
 			print(f"No controller function found for device type: {device_type}")
+
+	while True:
+		choice = get_device(menu, len(menu.keys()))
+		q = devices_queues[choice]
+		while True:
+			try:
+				output = q.get()
+				print(output)
+				time.sleep(1)
+			except KeyboardInterrupt:
+				break
 
 def main(pi_number):
 	output_queue = Queue()
 	settings = load_settings()
 	thread_list = []
 	start_threads(thread_list, output_queue, settings, pi_number)
-		
+
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@ import random
 from datetime import datetime
 import paho.mqtt.client as mqtt
 import json
-from broker_settings import HOSTNAME
+from broker_settings import SERVER_IP
 
 class DoorMembraneSwitchSimulator(threading.Thread):
     def __init__(self, output_queue, callback, settings, publish_event):
@@ -17,7 +17,7 @@ class DoorMembraneSwitchSimulator(threading.Thread):
 
 
     def send_dms(self, mqtt_client, digits):
-        print("SALJEM DMS: ", digits)
+        # print("SALJEM DMS: ", digits)
         current_timestamp = datetime.utcnow().isoformat()
         status_payload = {
             "measurement": "DMS",
@@ -30,7 +30,7 @@ class DoorMembraneSwitchSimulator(threading.Thread):
 
     def run(self):
         mqtt_client = mqtt.Client()
-        mqtt_client.connect(HOSTNAME, 1883, 60)
+        mqtt_client.connect(SERVER_IP, 1883, 60)
         mqtt_client.loop_start()
         while True:
             l = ""
@@ -39,6 +39,7 @@ class DoorMembraneSwitchSimulator(threading.Thread):
                 if self.running_flag and len(l) == 4:
                     self.send_dms(mqtt_client, "1234")
                     self.callback(l, self.settings, self.publish_event)
+                    self.output_queue.put(l)
                     l = ""
                     time.sleep(50)
 

@@ -3,7 +3,7 @@ import threading
 import time
 from datetime import datetime
 import paho.mqtt.client as mqtt
-from broker_settings import HOSTNAME
+from broker_settings import HOSTNAME, SERVER_IP
 import json
 
 class DoorSensorSimulator(threading.Thread):
@@ -46,7 +46,7 @@ class DoorSensorSimulator(threading.Thread):
 
     def run(self):
         mqtt_client = mqtt.Client()
-        mqtt_client.connect(HOSTNAME, 1883, 60)
+        mqtt_client.connect(SERVER_IP, 1883, 60)
         mqtt_client.loop_start()
         while True:
             if self.running_flag:
@@ -60,5 +60,6 @@ class DoorSensorSimulator(threading.Thread):
                     if self.locked_counter >= 2:
                         self.stop_alarm(mqtt_client)
                     self.locked_counter = 0
+                self.output_queue.put("DS - Unlocked" if status == 1 else "DS - Locked")
                 self.callback(status, self.settings, self.publish_event)
                 time.sleep(2)

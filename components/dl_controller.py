@@ -2,7 +2,7 @@ from simulators.dl_simulator import DoorLightSimulator
 from datetime import datetime
 import json
 import paho.mqtt.publish as publish
-from broker_settings import HOSTNAME, PORT
+from broker_settings import HOSTNAME, PORT, SERVER_IP
 import threading
 
 dl_batch = []

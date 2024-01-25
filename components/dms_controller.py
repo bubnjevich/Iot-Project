@@ -2,7 +2,7 @@ import threading
 import json
 from datetime import datetime
 import paho.mqtt.publish as publish
-from broker_settings import HOSTNAME, PORT
+from broker_settings import HOSTNAME, PORT, SERVER_IP
 from simulators.dms_simulator import DoorMembraneSwitchSimulator
 
 dms_batch = []

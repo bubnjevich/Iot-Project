@@ -30,6 +30,6 @@ class DoorLightSimulator(threading.Thread):
                 state = 1
                 if not self.state:
                      state = 0
-                #self.output_queue.put(f"Current Door Light State: {state}")
+                self.output_queue.put(f"Current Door Light State: {state}")
                 self.callback(state, self.settings, self.publish_event)
                 time.sleep(5)

@@ -2,6 +2,7 @@ import threading
 import time
 from typing import Any
 import paho.mqtt.client as mqtt
+import json
 from broker_settings import HOSTNAME
 import json
 
@@ -26,7 +27,8 @@ class Buzzer(threading.Thread):
 			self.running_flag = True
 			self.alarm_list.append(data["type"])
 		else:
-			self.alarm_list.remove(data["type"])
+			if len(self.alarm_list) != 0:
+				self.alarm_list.remove(data["type"])
 			if len(self.alarm_list) == 0:
 				self.running_flag = False   
 	
@@ -48,7 +50,7 @@ class Buzzer(threading.Thread):
 		mqtt_client = mqtt.Client()
 		mqtt_client.connect(HOSTNAME, 1883, 60)
 		mqtt_client.loop_start()
-		mqtt_client.subscribe("Alarm")
+		mqtt_client.subscribe("AlarmAlerted")
 		mqtt_client.on_message = lambda client, userdata, message: self.handle_alarm(json.loads(message.payload.decode('utf-8')))
 
 		self.setup()
