@@ -7,7 +7,7 @@ import json
 from congif import *
 
 
-app = Flask(__name__)
+app = Flask(_name_)
 socketio = SocketIO(app, cors_allowed_origins="*")  # Dodajte opcionalno cors_allowed_origins ako imate problema sa CORS
 
 
@@ -67,20 +67,40 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("Alarm")
     client.subscribe("Remote")
     client.subscribe("RPIR")
-    client.subscribe("RGB")
+    client.subscribe("DMS")
     client.subscribe("CurrentPeopleNumber") # sacuvaj trenutan broj ljudi
 
 
 mqtt_client.on_connect = on_connect
 mqtt_client.on_message = lambda client, userdata, msg: save_to_db(json.loads(msg.payload.decode('utf-8')))
 
+def handle_rpir_motion(data):
+    global current_people_number
+    if current_people_number == 0:
+        mqtt_client_db.publish("AlarmAlerted", json.dumps(data))
+        if HOSTNAME_PI1 != HOSTNAME_PI3:
+            mqtt_client_bb.publish("AlarmAlerted", json.dumps(data))
+        socketio.emit('alarm_detected', json.dumps(data), broadcast=True)
+
+@socketio.on("PINInput")
+def handle_pin_input(data):
+    point_data = {
+        
+    }
+
+    mqtt_client_db.publish("AlarmAlerted", json.dumps(data))
+    if HOSTNAME_PI1 != HOSTNAME_PI3:
+        mqtt_client_bb.publish("AlarmAlerted", json.dumps(data))
+
 def save_to_db(data):
     print(data)
     write_api = influxdb_client.write_api(write_options=SYNCHRONOUS)
 
+    if data["measurement" == "DMS"]:
+        pass
     if data["measurement"] == "Motion":
         handle_rpir_motion(data)
-    if data["measurement"] == "Alarm":
+    elif data["measurement"] == "Alarm":
         point = handle_alarms(data)
         write_api.write(bucket=bucket, org=org, record=point)
     elif data["measurement"] == "Acceleration":
@@ -93,28 +113,15 @@ def save_to_db(data):
         point = handle_people(data)
         write_api.write(bucket=bucket, org=org, record=point)
     else:
-        try:
-            point = handle_other_data(data)
-            write_api.write(bucket=bucket, org=org, record=point)
-        except:
-            print("ERROR: " + data )
+        point = handle_other_data(data)
+        write_api.write(bucket=bucket, org=org, record=point)
 
-
-def handle_rpir_motion(data):
-    global current_people_number
-    if current_people_number == 0:
-        mqtt_client_db.publish("AlarmAlerted", json.dumps(data))
-        if HOSTNAME_PI1 != HOSTNAME_PI3:
-            mqtt_client_bb.publish("AlarmAlerted", json.dumps(data))
-        print("ALARM DETECTED")
-        #socketio.emit('alarm_detected', json.dumps(data), include_self=False)
 
 
 def handle_alarms(data):
 
     mqtt_client_db.publish("AlarmAlerted", json.dumps(data))
-    #socketio.emit('alarm_detected', json.dumps(data), include_self=False)
-    print("ALARM DETECTED")
+    socketio.emit('alarm_detected', json.dumps(data), broadcast=True)
 
     if HOSTNAME_PI1 != HOSTNAME_PI3:
         mqtt_client_bb.publish("AlarmAlerted", json.dumps(data))
@@ -173,19 +180,16 @@ def handle_rotation(data):
     return point
 
 def handle_other_data(data):
-    try:
-        time = data["time"]
-        point = (
-            Point(data["measurement"])
-            .tag("simulated", data["simulated"])
-            .tag("runs_on", data["runs_on"])
-            .tag("name", data["name"])
-            .time(time)
-            .field("measurement", data["value"])
-        )
-        return point
-    except:
-        print("ERROR: " + str(data))
+    time = data["time"]
+    point = (
+        Point(data["measurement"])
+        .tag("simulated", data["simulated"])
+        .tag("runs_on", data["runs_on"])
+        .tag("name", data["name"])
+        .time(time)
+        .field("measurement", data["value"])
+    )
+    return point
 
 @socketio.on('AlarmClockSet')
 def handle_set_alarm_clock(data):
@@ -262,6 +266,6 @@ def retrieve_dht_data():
   """
     return handle_influx_query(query)
 
-if __name__ == '__main__':
+if _name_ == '_main_':
     socketio.run(app, debug=True, allow_unsafe_werkzeug=True)  # Postavite odgovarajući port za soket konekciju
     print("Starting server...")

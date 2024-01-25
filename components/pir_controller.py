@@ -23,7 +23,7 @@ def publisher_task(event, pir_batch):
             publish_data_counter = 0
             pir_batch.clear()
         publish.multiple(local_pir_batch, hostname=HOSTNAME, port=PORT)
-        print(f'published {publish_data_limit} pir values')
+        # print(f'published {publish_data_limit} pir values')
         event.clear()
 
 
