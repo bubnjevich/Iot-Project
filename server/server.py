@@ -61,16 +61,18 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("Acceleration")
     client.subscribe("Rotation")
     client.subscribe("Alarm")
+    client.subscribe("RPIR")
     client.subscribe("CurrentPeopleNumber") # sacuvaj trenutan broj ljudi
 
 
 mqtt_client.on_connect = on_connect
 mqtt_client.on_message = lambda client, userdata, msg: save_to_db(json.loads(msg.payload.decode('utf-8')))
 
-
 def save_to_db(data):
     write_api = influxdb_client.write_api(write_options=SYNCHRONOUS)
 
+    if data["measurement"] == "Motion":
+        handle_rpir_motion(data)
     if data["measurement"] == "Alarm":
         point = handle_alarms(data)
         write_api.write(bucket=bucket, org=org, record=point)
@@ -87,7 +89,16 @@ def save_to_db(data):
         point = handle_other_data(data)
         write_api.write(bucket=bucket, org=org, record=point)
 
-        
+
+def handle_rpir_motion(data):
+    global current_people_number
+    if current_people_number == 0:
+        mqtt_client_db.publish("AlarmAlerted", json.dumps(data))
+        if HOSTNAME_PI1 != HOSTNAME_PI3:
+            mqtt_client_bb.publish("AlarmAlerted", json.dumps(data))
+        socketio.emit('alarm_detected', json.dumps(data), broadcast=True)
+
+
 def handle_alarms(data):
 
     mqtt_client_db.publish("AlarmAlerted", json.dumps(data))

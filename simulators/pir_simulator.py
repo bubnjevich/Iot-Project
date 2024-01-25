@@ -71,13 +71,16 @@ class MotionSensorSimulator(threading.Thread): # PIR 1, PIR2, RPIR 1 - 4
                     elif self.settings["name"] == "Door Motion Sensor 2":
                         self.save_current_people_count()
                     elif self.settings["name"] in ["DB - SMART_RPIR1", "DB - SMART RPIR2", "Room PIR 3", "Room PIR 4"]:
-                        # alarm
-                        # todo
+                        current_timestamp = datetime.utcnow().isoformat()
                         status_payload = {
                             "measurement": "Motion",
-                            "value": 1
+                            "start": 1,
+                            "device_name": self.settings["name"],
+                            "time": current_timestamp,
+                            "type" : self.settings["name"]
+
                         }
-                        self.mqtt_client.publish("RPIR", json.dumps(status_payload))
+                        self.mqtt_server.publish("RPIR", json.dumps(status_payload))
                 self.output_queue.put("Detected" if motion == "Detected" else "Not Detected")
                 self.callback(1 if motion == 'Detected' else 0, self.settings, self.publish_event)
                 time.sleep(5)
