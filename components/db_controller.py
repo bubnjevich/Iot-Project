@@ -19,7 +19,7 @@ def publisher_task(event, db_batch):
             publish_data_counter = 0
             db_batch.clear()
         publish.multiple(local_db_batch, hostname=HOSTNAME, port=PORT)
-        print(f'published {publish_data_limit} db values')
+        # print(f'published {publish_data_limit} db values')
         event.clear()
 
 publish_event = threading.Event()
