@@ -5,6 +5,8 @@ import paho.mqtt.client as mqtt
 import json
 from broker_settings import HOSTNAME
 import json
+import datetime
+
 
 try:
 	import RPi.GPIO as GPIO
@@ -21,16 +23,24 @@ class Buzzer(threading.Thread):
 		self.callback = callback
 		self.publish_event = publish_event
 		self.alarm_list = []
+		self.alarm_clock_time = ""
 
-	def handle_alarm(self, data):
-		if data["start"]:
-			self.running_flag = True
-			self.alarm_list.append(data["type"])
+	def handle_alarm(self, topic, data):
+		if topic == "AlarmAlerted":
+			if data["start"]:
+				self.running_flag = True
+				self.alarm_list.append(data["type"])
+			else:
+				if len(self.alarm_list) != 0:
+					self.alarm_list.remove(data["type"])
+				if len(self.alarm_list) == 0:
+					self.running_flag = False
+		elif topic == "AlarmClockSet":
+			self.alarm_clock_time = data
 		else:
-			if len(self.alarm_list) != 0:
-				self.alarm_list.remove(data["type"])
+			self.alarm_clock_time = "" 
 			if len(self.alarm_list) == 0:
-				self.running_flag = False   
+				self.running_flag = False
 	
 	def setup(self):
 		GPIO.setmode(GPIO.BCM)
@@ -51,15 +61,21 @@ class Buzzer(threading.Thread):
 		mqtt_client.connect(HOSTNAME, 1883, 60)
 		mqtt_client.loop_start()
 		mqtt_client.subscribe("AlarmAlerted")
-		mqtt_client.on_message = lambda client, userdata, message: self.handle_alarm(json.loads(message.payload.decode('utf-8')))
+		if self.settings["name"] == "Bedroom Buzzer":
+			mqtt_client.subscribe("AlarmClockSet")
+			mqtt_client.subscribe("AlarmClockDisable")
+		mqtt_client.on_message = lambda client, userdata, message: self.handle_alarm(message.topic, json.loads(message.payload.decode('utf-8')))
 
 		self.setup()
 		while True:
+			current_time = datetime.datetime.now().strftime("%H:%M")
+			if self.alarm_clock_time == current_time:
+				self.running_flag = True
 			if self.running_flag:
 				pitch = 440
 				duration = 0.1
 				self.buzz(pitch, duration)
 				self.callback(1, self.settings, self.publish_event)
-				self.running_flag = False
+				#self.running_flag = False
 				time.sleep(1)
 

@@ -33,7 +33,7 @@ mqtt_client.connect("localhost", 1883, 60)
 mqtt_client.loop_start()
 
 mqtt_buzzer = mqtt.Client()
-mqtt_client.connect("192.168.0.139", 1883, 60)
+mqtt_client.connect("localhost", 1883, 60)
 mqtt_client.loop_start()
 current_people_number = 0   # inicjalno nema nikoga u kuci
 
@@ -178,6 +178,26 @@ def handle_other_data(data):
     )
     return point
 
+@socketio.on('AlarmClockSet')
+def handle_set_alarm_clock(data):
+    print('Alarm Set at:', data['time'])
+    mqtt_client_bb.publish("AlarmClockSet", json.dumps(data))
+   
+@socketio.on('DisableAlarm')
+def handle_disable_alarm_clock(data):
+    print('Alarm Clock Disabled')
+    mqtt_client_bb.publish("AlarmClockDisable", json.dumps(data))
+
+@socketio.on('SetLightColor')
+def handle_set_light_color(data):
+    print(data)
+    mqtt_client_bb.publish("LightChange", data)
+
+@socketio.on('PINInput')
+def handle_pin_input(data):
+    print(data)
+    #Handle 
+
 # Route to store dummy data
 @app.route('/store_data', methods=['POST'])
 def store_data():
@@ -235,3 +255,4 @@ def retrieve_dht_data():
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, allow_unsafe_werkzeug=True)  # Postavite odgovarajući port za soket konekciju
+    print("Starting server...")
