@@ -37,7 +37,7 @@ def rgb_callback(status, rgb_settings, publish_event):
     current_timestamp = datetime.utcnow().isoformat()
 
     status_payload = {
-        "measurement": "Motion",
+        "measurement": "RGB",
         "simulated": rgb_settings['simulated'],
         "runs_on": rgb_settings["runs_on"],
         "name": rgb_settings["name"],
@@ -46,7 +46,7 @@ def rgb_callback(status, rgb_settings, publish_event):
     }
 
     with counter_lock:
-        rgb_batch.append(('Motion', json.dumps(status_payload), 0, True))
+        rgb_batch.append(('RGB', json.dumps(status_payload), 0, True))
         publish_data_counter += 1
 
     if publish_data_counter >= publish_data_limit:

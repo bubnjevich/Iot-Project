@@ -67,6 +67,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("Alarm")
     client.subscribe("Remote")
     client.subscribe("RPIR")
+    client.subscribe("RGB")
     client.subscribe("CurrentPeopleNumber") # sacuvaj trenutan broj ljudi
 
 
@@ -92,8 +93,11 @@ def save_to_db(data):
         point = handle_people(data)
         write_api.write(bucket=bucket, org=org, record=point)
     else:
-        point = handle_other_data(data)
-        write_api.write(bucket=bucket, org=org, record=point)
+        try:
+            point = handle_other_data(data)
+            write_api.write(bucket=bucket, org=org, record=point)
+        except:
+            print("ERROR: " + data )
 
 
 def handle_rpir_motion(data):
@@ -102,13 +106,15 @@ def handle_rpir_motion(data):
         mqtt_client_db.publish("AlarmAlerted", json.dumps(data))
         if HOSTNAME_PI1 != HOSTNAME_PI3:
             mqtt_client_bb.publish("AlarmAlerted", json.dumps(data))
-        socketio.emit('alarm_detected', json.dumps(data), broadcast=True)
+        print("ALARM DETECTED")
+        #socketio.emit('alarm_detected', json.dumps(data), include_self=False)
 
 
 def handle_alarms(data):
 
     mqtt_client_db.publish("AlarmAlerted", json.dumps(data))
-    socketio.emit('alarm_detected', json.dumps(data), broadcast=True)
+    #socketio.emit('alarm_detected', json.dumps(data), include_self=False)
+    print("ALARM DETECTED")
 
     if HOSTNAME_PI1 != HOSTNAME_PI3:
         mqtt_client_bb.publish("AlarmAlerted", json.dumps(data))
@@ -167,16 +173,19 @@ def handle_rotation(data):
     return point
 
 def handle_other_data(data):
-    time = data["time"]
-    point = (
-        Point(data["measurement"])
-        .tag("simulated", data["simulated"])
-        .tag("runs_on", data["runs_on"])
-        .tag("name", data["name"])
-        .time(time)
-        .field("measurement", data["value"])
-    )
-    return point
+    try:
+        time = data["time"]
+        point = (
+            Point(data["measurement"])
+            .tag("simulated", data["simulated"])
+            .tag("runs_on", data["runs_on"])
+            .tag("name", data["name"])
+            .time(time)
+            .field("measurement", data["value"])
+        )
+        return point
+    except:
+        print("ERROR: " + str(data))
 
 @socketio.on('AlarmClockSet')
 def handle_set_alarm_clock(data):
