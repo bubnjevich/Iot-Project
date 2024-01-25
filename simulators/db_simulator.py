@@ -46,8 +46,11 @@ class DoorBuzzerSimulator(threading.Thread):
 
             if not data["start"]:
                 #print("Gasim jedan od alarma...")
-                if len(self.alarm_list) != 0:
+                if len(self.alarm_list) != 0 and data["type"] in self.alarm_list:
+
                     self.alarm_list.remove(data["type"])
+                elif len(self.alarm_list) != 0 and not data["type"] in self.alarm_list:
+                    self.alarm_list.pop()
                 if len(self.alarm_list) == 0:
                     #print("Gasim alarme jer ih vise nema...")
                     self.running_flag = False

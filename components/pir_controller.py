@@ -38,7 +38,7 @@ def pir_callback(status, pir_settings, publish_event):
     current_timestamp = datetime.utcnow().isoformat()
 
     status_payload = {
-        "measurement": "Motion",
+        "measurement": "MotionDetected",
         "simulated": pir_settings['simulated'],
         "runs_on": pir_settings["runs_on"],
         "name": pir_settings["name"],

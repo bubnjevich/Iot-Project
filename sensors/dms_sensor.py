@@ -1,5 +1,10 @@
 import threading
 import time
+from datetime import datetime
+import json
+from broker_settings import SERVER_IP
+import paho.mqtt.client as mqtt
+
 try:
 	import RPi.GPIO as GPIO
 except:
@@ -21,6 +26,9 @@ class MembraneKeypad(threading.Thread):
 		self.C2 = settings["C2"]
 		self.C3 = settings["C3"]
 		self.C4 = settings["C4"]
+		self.l = ""
+		self.mqtt_client = mqtt.Client()
+
 		self.setup()
 
 	def setup(self):
@@ -37,19 +45,44 @@ class MembraneKeypad(threading.Thread):
 		GPIO.setup(self.C3, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 		GPIO.setup(self.C4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
+	def send_dms(self,  digits):
+		# print("SALJEM DMS: ", digits)
+		current_timestamp = datetime.utcnow().isoformat()
+		status_payload = {
+			"measurement": "DMS",
+			"device_name": self.settings["name"],
+			"simulated": False,
+			"runs_on": self.settings["runs_on"],
+			"name": self.settings["name"],
+			"value": digits,
+			"time": current_timestamp
+		}
+
+		self.mqtt_client.publish("DMS", json.dumps(status_payload))
+
 	def readLine(self, line, characters):
 		GPIO.output(line, GPIO.HIGH)
 		if(GPIO.input(self.C1) == 1):
-			self.callback(characters[0], self.settings, self.publish_event)
+			self.l += characters[0]
+			#self.callback(characters[0], self.settings, self.publish_event)
 		if(GPIO.input(self.C2) == 1):
-			self.callback(characters[1], self.settings, self.publish_event)
+			self.l += characters[1]
+			#self.callback(characters[1], self.settings, self.publish_event)
 		if(GPIO.input(self.C3) == 1):
-			self.callback(characters[2], self.settings, self.publish_event)
+			self.l += characters[2]
+
+			#self.callback(characters[2], self.settings, self.publish_event)
 		if(GPIO.input(self.C4) == 1):
-			self.callback(characters[3], self.settings, self.publish_event)
+			self.l += characters[3]
+			#self.callback(characters[3], self.settings, self.publish_event)
+		if len(self.l) == 4:
+			self.send_dms(self.l)
+			self.l = ""
 		GPIO.output(line, GPIO.LOW)
 
 	def run(self):
+		self.mqtt_client.connect(SERVER_IP, 1883, 60)
+		self.mqtt_client.loop_start()
 		while True:
 			if self.running_flag:
 				self.readLine(self.R1, ["1","2","3","A"])

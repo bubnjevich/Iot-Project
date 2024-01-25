@@ -22,6 +22,9 @@ class DoorMembraneSwitchSimulator(threading.Thread):
         status_payload = {
             "measurement": "DMS",
             "device_name" : self.settings["name"],
+            "simulated" : True,
+            "runs_on" : self.settings["runs_on"],
+            "name" : self.settings["name"],
             "value" : digits,
             "time" : current_timestamp
         }

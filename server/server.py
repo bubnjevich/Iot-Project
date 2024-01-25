@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import Flask, jsonify, request
 from influxdb_client import InfluxDBClient, Point
 from flask_socketio import SocketIO, emit
@@ -7,7 +9,7 @@ import json
 from congif import *
 
 
-app = Flask(_name_)
+app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")  # Dodajte opcionalno cors_allowed_origins ako imate problema sa CORS
 
 
@@ -84,20 +86,32 @@ def handle_rpir_motion(data):
 
 @socketio.on("PINInput")
 def handle_pin_input(data):
-    point_data = {
-        
-    }
+
 
     mqtt_client_db.publish("AlarmAlerted", json.dumps(data))
     if HOSTNAME_PI1 != HOSTNAME_PI3:
         mqtt_client_bb.publish("AlarmAlerted", json.dumps(data))
+    current_timestamp = datetime.utcnow().isoformat()
+
+    point_data = {
+        "measurement" : "DMS",
+        "value" : str(data),
+        "time": current_timestamp
+
+    }
+    mqtt_client_db.publish("AlarmAlerted", json.dumps(point_data))
+    if HOSTNAME_PI1 != HOSTNAME_PI3:
+        mqtt_client_bb.publish("AlarmAlerted", json.dumps(point_data))
 
 def save_to_db(data):
-    print(data)
     write_api = influxdb_client.write_api(write_options=SYNCHRONOUS)
 
-    if data["measurement" == "DMS"]:
-        pass
+
+    if data["measurement"] == "DMS": # stiglo sa simulacije
+        mqtt_client_db.publish("AlarmAlerted", json.dumps(data))
+        if HOSTNAME_PI1 != HOSTNAME_PI3:
+            mqtt_client_bb.publish("AlarmAlerted", json.dumps(data))
+
     if data["measurement"] == "Motion":
         handle_rpir_motion(data)
     elif data["measurement"] == "Alarm":
@@ -181,6 +195,7 @@ def handle_rotation(data):
 
 def handle_other_data(data):
     time = data["time"]
+    print(data)
     point = (
         Point(data["measurement"])
         .tag("simulated", data["simulated"])
@@ -206,10 +221,6 @@ def handle_set_light_color(data):
     print(data)
     mqtt_client_bb.publish("LightChange", data)
 
-@socketio.on('PINInput')
-def handle_pin_input(data):
-    print(data)
-    #Handle 
 
 # Route to store dummy data
 @app.route('/store_data', methods=['POST'])
@@ -266,6 +277,6 @@ def retrieve_dht_data():
   """
     return handle_influx_query(query)
 
-if _name_ == '_main_':
+if __name__ == '_main_':
     socketio.run(app, debug=True, allow_unsafe_werkzeug=True)  # Postavite odgovarajući port za soket konekciju
     print("Starting server...")
