@@ -22,7 +22,7 @@ def publisher_task(event, dus_batch):
             dus_batch.clear()
         #print(local_dht_batch)
         publish.multiple(local_dht_batch, hostname=SERVER_IP, port=PORT)
-        print(f'published {publish_data_limit} dus values')
+        #print(f'published {publish_data_limit} dus values')
         event.clear()
 
 

@@ -39,6 +39,7 @@ class DoorMembraneSwitchSimulator(threading.Thread):
                 if self.running_flag and len(l) == 4:
                     self.send_dms(mqtt_client, "1234")
                     self.callback(l, self.settings, self.publish_event)
+                    self.output_queue.put(l)
                     l = ""
                     time.sleep(50)
 

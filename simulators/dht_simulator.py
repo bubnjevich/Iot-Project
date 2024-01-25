@@ -38,5 +38,6 @@ class DHTSimulator(threading.Thread):
             for humidity, temperature in generate_values(10, 30):
                 if self.running_flag:
                     time.sleep(1)
+                    self.output_queue.put(generate_output(humidity, temperature, self.settings["name"]))
                     self.callback(humidity, temperature, self.settings, self.publish_event)
                     

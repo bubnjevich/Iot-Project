@@ -78,6 +78,6 @@ class MotionSensorSimulator(threading.Thread): # PIR 1, PIR2, RPIR 1 - 4
                             "value": 1
                         }
                         self.mqtt_client.publish("RPIR", json.dumps(status_payload))
-
+                self.output_queue.put("Detected" if motion == "Detected" else "Not Detected")
                 self.callback(1 if motion == 'Detected' else 0, self.settings, self.publish_event)
                 time.sleep(5)

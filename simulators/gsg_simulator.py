@@ -7,6 +7,15 @@ from broker_settings import HOSTNAME
 from datetime import datetime
 
 
+def generate_output(gyro, accel):
+    t = time.localtime()
+    output = "="*40
+    output += f"\nTimestamp: {time.strftime('%H:%M:%S', t)}\n"
+    output += "Rotation: " + f"({gyro[0]:.3f}, {gyro[1]:.3f}, {gyro[2]:.3f})\n"
+    output += "Acceleration: " + f"({accel[0]:.3f}, {accel[1]:.3f}, {accel[2]:.3f})\n"
+    return output
+
+
 class GSGSimulator(threading.Thread):
     def __init__(self, output_queue, callback, settings, publish_event):
         super().__init__()
@@ -55,6 +64,8 @@ class GSGSimulator(threading.Thread):
             accel = self.simulate_acceleration()
             if self.is_moving:
                 self.handle_alarm( mqtt_client)
+            output = generate_output(gyro, accel)
+            self.output_queue.put(output)
             self.callback(accel, gyro, self.settings, self.publish_event)
             time.sleep(1)
             

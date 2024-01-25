@@ -20,7 +20,7 @@ def publisher_task(event, dl_batch):
             publish_data_counter = 0
             dl_batch.clear()
         publish.multiple(local_dht_batch, hostname=SERVER_IP, port=PORT)
-        print(f'published {publish_data_limit} dl values')
+        #print(f'published {publish_data_limit} dl values')
         event.clear()
 
 publish_event = threading.Event()

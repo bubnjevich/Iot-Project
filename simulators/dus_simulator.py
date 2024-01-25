@@ -27,5 +27,6 @@ class DoorUltrasonicSensorSimulator(threading.Thread):
                    mqtt_client.publish("DUS1", distance)
                 elif self.settings["name"] == "Door Ultrasonic Sensor 2":
                     mqtt_client.publish("DUS2", distance)
+                self.output_queue.put(str(distance) + " cm")
                 self.callback(distance, self.settings, self.publish_event)
                 time.sleep(4)

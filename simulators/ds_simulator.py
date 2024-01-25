@@ -32,7 +32,6 @@ class DoorSensorSimulator(threading.Thread):
         pass
 
     def start_alarm(self, mqtt_client):
-        print("saljem na server....")
         current_timestamp = datetime.utcnow().isoformat()
         status_payload = {
             "measurement": "Alarm",
@@ -61,5 +60,6 @@ class DoorSensorSimulator(threading.Thread):
                     if self.locked_counter >= 2:
                         self.stop_alarm(mqtt_client)
                     self.locked_counter = 0
+                self.output_queue.put("DS - Unlocked" if status == 1 else "DS - Locked")
                 self.callback(status, self.settings, self.publish_event)
                 time.sleep(2)
