@@ -17,11 +17,11 @@ def publisher_task(event, dus_batch):
     while True:
         event.wait()
         with counter_lock:
-            local_dht_batch = dus_batch.copy()
+            local_dus_batch = dus_batch.copy()
             publish_data_counter = 0
             dus_batch.clear()
         #print(local_dht_batch)
-        publish.multiple(local_dht_batch, hostname=HOSTNAME, port=PORT)
+        publish.multiple(local_dus_batch, hostname=HOSTNAME, port=PORT)
         print(f'published {publish_data_limit} dus values')
         event.clear()
 

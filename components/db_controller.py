@@ -15,10 +15,10 @@ def publisher_task(event, db_batch):
     while True:
         event.wait()
         with counter_lock:
-            local_dht_batch = db_batch.copy()
+            local_db_batch = db_batch.copy()
             publish_data_counter = 0
             db_batch.clear()
-        publish.multiple(local_dht_batch, hostname=HOSTNAME, port=PORT)
+        publish.multiple(local_db_batch, hostname=HOSTNAME, port=PORT)
         print(f'published {publish_data_limit} db values')
         event.clear()
 

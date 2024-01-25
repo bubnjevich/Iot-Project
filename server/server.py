@@ -27,6 +27,10 @@ influxdb_client = InfluxDBClient(url=url, token=token, org=org)
 mqtt_client = mqtt.Client()
 mqtt_client.connect("localhost", 1883, 60)
 mqtt_client.loop_start()
+
+mqtt_buzzer = mqtt.Client()
+mqtt_client.connect("192.168.0.139", 1883, 60)
+mqtt_client.loop_start()
 current_people_number = 0   # inicjalno nema nikoga u kuci
 
 def on_connect(client, userdata, flags, rc):
@@ -39,6 +43,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("Acceleration")
     client.subscribe("Rotation")
     client.subscribe("Alarm")
+    client.subscribe("Remote")
     client.subscribe("CurrentPeopleNumber") # sacuvaj trenutan broj ljudi
 
 
@@ -47,6 +52,7 @@ mqtt_client.on_message = lambda client, userdata, msg: save_to_db(json.loads(msg
 
 
 def save_to_db(data):
+    print(data)
     write_api = influxdb_client.write_api(write_options=SYNCHRONOUS)
     if data["measurement"] == "Alarm":
         point = handle_alarms(data)
@@ -66,6 +72,7 @@ def save_to_db(data):
 
         
 def handle_alarms(data):
+    mqtt_buzzer.publish("AlarmAlerted", data)
     time = data["time"]
     point = (
         Point(data["measurement"])

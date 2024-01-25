@@ -10,7 +10,7 @@ class Button(threading.Thread):
 		super().__init__()
 		self.port = port
 		self.output_queue = output_queue
-		self.running_flag = False
+		self.running_flag = True
 		self.callback = callback
 		self.publish_event = publish_event
 		self.settings = settings

@@ -10,7 +10,7 @@ class PIRMotionSensor(threading.Thread):
 		super().__init__()
 		self.pin = pin
 		self.output_queue = output_queue
-		self.running_flag = False
+		self.running_flag = True
 		self.settings = settings
 		self.callback = callback
 		self.publish_event = publish_event

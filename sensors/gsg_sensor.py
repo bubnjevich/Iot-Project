@@ -60,6 +60,7 @@ class GSG(threading.Thread):
                     print("Significant gyro change detected!")
                 self.prev_accel = current_accel
                 self.prev_gyro = current_gyro
+                self.callback(current_accel, current_gyro, self.settings, self.publish_event)
                 os.system('clear')
                 time.sleep(0.1)
 

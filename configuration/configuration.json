@@ -169,6 +169,7 @@
         "BIR": {
             "device_type": "ir",
             "simulated": true,
+            "pin": 17,
             "runs_on": "PI3",
             "name": "Bedroom Infrared"
         },
@@ -176,7 +177,10 @@
             "device_type": "rgb",
             "simulated": true,
             "runs_on": "PI3",
-            "name": "Bedroom RGB"
+            "name": "Bedroom RGB",
+            "red_pin": 12,
+            "green_pin":13,
+            "blue_pin":19
         }
     }
 }
