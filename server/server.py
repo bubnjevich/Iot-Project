@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import Flask, jsonify, request
 from influxdb_client import InfluxDBClient, Point
 from flask_socketio import SocketIO, emit
@@ -8,7 +10,7 @@ from congif import *
 
 
 app = Flask(__name__)
-socketio = SocketIO(app, cors_allowed_origins="*")  # Dodajte opcionalno cors_allowed_origins ako imate problema sa CORS
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 
 
@@ -21,34 +23,18 @@ with open(".env", "r") as file:
         if key == "token": token = value
         if key == "org" : org = value
 
-url = "http://localhost:8086"
+url = "http://localhost:8086" # influx
 bucket = "example_db"
 
 influxdb_client = InfluxDBClient(url=url, token=token, org=org)
 
 
 # MQTT Configuration
-mqtt_client = mqtt.Client()
-mqtt_client.connect("localhost", 1883, 60)
+mqtt_client = mqtt.Client() # serverski mqtt
+mqtt_client.connect("localhost", 1883, 60) # radi preko dokera
 mqtt_client.loop_start()
 current_people_number = 0   # inicjalno nema nikoga u kuci
 
-
-# alert alarm on Door Buzzer [PI1]
-if HOSTNAME_PI1 == "localhost":
-  mqtt_client_db = mqtt_client
-else:
-    mqtt_client_db = mqtt.Client()
-    mqtt_client_db.connect(HOSTNAME_PI1, 1883, 60)
-    mqtt_client_db.loop_start()
-
-# alert alarm on Bedroom Buzzer [PI3]
-if HOSTNAME_PI3 == "localhost":
-  mqtt_client_bb = mqtt_client
-else:
-    mqtt_client_bb = mqtt.Client()
-    mqtt_client_bb.connect(HOSTNAME_PI3, 1883, 60)
-    mqtt_client_bb.loop_start()
 
 
 def on_connect(client, userdata, flags, rc):
@@ -62,6 +48,8 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("Rotation")
     client.subscribe("Alarm")
     client.subscribe("RPIR")
+    client.subscribe("Light")
+    client.subscribe("NotifyFrontend")
     client.subscribe("CurrentPeopleNumber") # sacuvaj trenutan broj ljudi
 
 
@@ -74,8 +62,7 @@ def save_to_db(data):
     if data["measurement"] == "Motion":
         handle_rpir_motion(data)
     if data["measurement"] == "Alarm":
-        point = handle_alarms(data)
-        write_api.write(bucket=bucket, org=org, record=point)
+        notify_possible_alarm(data)
     elif data["measurement"] == "Acceleration":
         point = handle_acceleration(data)
         write_api.write(bucket=bucket, org=org, record=point)
@@ -83,54 +70,115 @@ def save_to_db(data):
         point = handle_rotation(data)
         write_api.write(bucket=bucket, org=org, record=point)
     elif data["measurement"] == "NumberPeople":
-        point = handle_people(data)
+        pass
+    elif data["measurement"] == "NotifyFrontend":
+        point = handle_alarm(data)
         write_api.write(bucket=bucket, org=org, record=point)
+
     else:
         point = handle_other_data(data)
         write_api.write(bucket=bucket, org=org, record=point)
 
+def process_sensor(sensor_name):
+    global current_people_number
+    data_response = get_last_two_distance_of_dus(sensor_name)
+    poslednji = round(float(data_response["data"][0]["_value"]), 2)
+    pretposlednji = round(float(data_response["data"][1]["_value"]), 2)
+    if poslednji > pretposlednji: # osoba izlazi iz objekta
+        if current_people_number - 1 < 0:
+            return
+        
+    current_people_number += 1 if poslednji < pretposlednji else -1
+    print("Trenutan broj ljudi u kuci: ", current_people_number)
+    handle_people()
 
 def handle_rpir_motion(data):
     global current_people_number
-    if current_people_number == 0:
-        mqtt_client_db.publish("AlarmAlerted", json.dumps(data))
-        if HOSTNAME_PI1 != HOSTNAME_PI3:
-            mqtt_client_bb.publish("AlarmAlerted", json.dumps(data))
-        socketio.emit('alarm_detected', json.dumps(data), broadcast=True)
+    if data["value"] == 1:
+        if data["name"] == "DB - MY_DPIR1":
+            mqtt_client.publish("LIGHT_DL1")
+            process_sensor("DUS1 - Device DUS")
+        elif data["name"] == "Door Motion Sensor 2":
+                process_sensor("Door Ultrasonic Sensor 2")
+        elif data["name"].startswith("Room PIR"):
+            # proveri brojno stanje ljudi u objektu ako je 0 izazovi alarm
+            print("PRIMIO SAM PIR!")
+            if current_people_number == 0:
+                print("IZAZIVAM ALARM! NEKO SE MRDNUO!")
+                send_alarm(data)
 
 
-def handle_alarms(data):
-
-    mqtt_client_db.publish("AlarmAlerted", json.dumps(data))
-    socketio.emit('alarm_detected', json.dumps(data), broadcast=True)
-
-    if HOSTNAME_PI1 != HOSTNAME_PI3:
-        mqtt_client_bb.publish("AlarmAlerted", json.dumps(data))
 
 
+def send_alarm(data):
+    current_timestamp = datetime.utcnow().isoformat()
+
+    status_payload = {
+        "measurement": "Alarm",
+        "alarm_name": "RPIR Motion",
+        "device_name": data["name"],
+        "type": data["runs_on"],
+        "start": 1,
+        "time": current_timestamp
+    }
+    mqtt_client.publish("AlarmAlerted", json.dumps(status_payload))
+    socketio.emit('alarm_detected', json.dumps(status_payload))
+
+
+
+@socketio.on("PINInput")
+def handle_pin_input(data):
+    print("Primio sam PIN:", data)
+    current_timestamp = datetime.utcnow().isoformat()
+    point_data = {
+        "measurement" : "DMS",
+        "value" : str(data),
+        "time": current_timestamp,
+        "simulated" : False
+
+    }
+    mqtt_client.publish("AlarmAlerted", json.dumps(point_data))
+
+def handle_alarm(data):
+    # print("Alarm se gasi/pali jer je sistem aktivan....")
+    # print(data)
     time = data["time"]
+    status = "On" if data["start"] == 1 else "Off"
+    global socketio
     point = (
-        Point(data["measurement"])
+        Point("Alarm")
         .tag("alarm_name", data["alarm_name"])
         .tag("device_name", data["device_name"])
         .tag("type", data["type"])
-        .field("start", data["start"])
+        .field("status", status)
         .time(time)
     )
+    socketio.emit('alarm_detected', json.dumps(data))
     return point
 
-def handle_people(data):
-    time = data["time"]
+    
+
+def notify_possible_alarm(data):
+    global socketio
+    print("Primio sam upozorenje za alarm: ", data)
+    mqtt_client.publish("AlarmAlerted", json.dumps(data))
+
+
+
+def handle_people():
+    current_timestamp = datetime.utcnow().isoformat()
+
     global current_people_number
-    if not (int(data["value"]) < 0 and current_people_number <= 0):
-        current_people_number += int(data["value"])
     point = (
-        Point(data["measurement"])
+        Point("NumberPeople")
         .tag("name", "Number of people in the house")
-        .time(time)
+        .time(current_timestamp)
         .field("measurement", current_people_number)
     )
-    return point
+
+    write_api = influxdb_client.write_api(write_options=SYNCHRONOUS)
+    write_api.write(bucket=bucket, org=org, record=point)
+
 
 def handle_acceleration(data): 
     time = data["time"]
@@ -184,18 +232,35 @@ def store_data():
 
 
 def handle_influx_query(query):
-    try:
-        query_api = influxdb_client.query_api()
-        tables = query_api.query(query, org=org)
+    with app.app_context():
+        try:
+            query_api = influxdb_client.query_api()
+            tables = query_api.query(query, org=org)
 
-        container = []
-        for table in tables:
-            for record in table.records:
-                container.append(record.values)
+            container = []
+            for table in tables:
+                for record in table.records:
+                    container.append(record.values)
 
-        return jsonify({"status": "success", "data": container})
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)})
+            return {
+                "status" : "success",
+                "data" : container
+            }
+        except Exception as e:
+            return jsonify({"status": "error", "message": str(e)})
+
+
+def get_last_two_distance_of_dus(dus_name):
+    query = f"""
+    from(bucket: "{bucket}")
+      |> range(start: -2d)  
+      |> filter(fn: (r) => r["_measurement"] == "Distance")
+      |> filter(fn: (r) => r["name"] == "{dus_name}")
+      |> sort(columns: ["_time"], desc: true)  
+      |> limit(n: 2) 
+      |> yield(name: "mean")
+    """
+    return handle_influx_query(query)
 
 
 @app.route('/simple_query', methods=['GET'])
@@ -228,4 +293,4 @@ def retrieve_dht_data():
     return handle_influx_query(query)
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, allow_unsafe_werkzeug=True)  # Postavite odgovarajući port za soket konekciju
+    socketio.run(app, debug=True, allow_unsafe_werkzeug=True, use_reloader=False)  # Postavite odgovarajući port za soket konekciju

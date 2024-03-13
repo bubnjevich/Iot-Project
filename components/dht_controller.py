@@ -2,7 +2,7 @@ from datetime import datetime
 from simulators.dht_simulator import DHTSimulator
 import json
 import paho.mqtt.publish as publish
-from broker_settings import HOSTNAME, PORT, SERVER_IP
+from broker_settings import PORT, SERVER_IP
 
 
 import threading
@@ -23,7 +23,6 @@ def publisher_task(event, dht_batch):
             publish_data_counter = 0
             dht_batch.clear()
         publish.multiple(local_dht_batch, hostname=SERVER_IP, port=PORT)
-        #print(f'published {publish_data_limit} dht values')
         event.clear()
 
 
@@ -43,7 +42,7 @@ def dht_callback(humidity, temperature,dht_settings, publish_event):
         "simulated": dht_settings['simulated'],
         "runs_on": dht_settings["runs_on"],
         "name": dht_settings["name"],
-        "value": temperature,
+        "value": float(temperature),
         "time": current_timestamp
     }
 
@@ -52,7 +51,7 @@ def dht_callback(humidity, temperature,dht_settings, publish_event):
         "simulated": dht_settings['simulated'],
         "runs_on": dht_settings["runs_on"],
         "name": dht_settings["name"],
-        "value": humidity,
+        "value": float(humidity),
         "time": current_timestamp
     }
 

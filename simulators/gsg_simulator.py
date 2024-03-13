@@ -3,7 +3,7 @@ import time
 import random
 import paho.mqtt.client as mqtt
 import json
-from broker_settings import HOSTNAME
+from broker_settings import SERVER_IP
 from datetime import datetime
 
 
@@ -56,7 +56,7 @@ class GSGSimulator(threading.Thread):
 
     def run(self):
         mqtt_client = mqtt.Client()
-        mqtt_client.connect(HOSTNAME, 1883, 60)
+        mqtt_client.connect(SERVER_IP, 1883, 60)
         mqtt_client.loop_start()
         while True:
             self.is_moving = random.random() < 0.05

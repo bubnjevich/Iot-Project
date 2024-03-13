@@ -2,7 +2,7 @@ from simulators.db_simulator import DoorBuzzerSimulator
 from datetime import datetime
 import json
 import paho.mqtt.publish as publish
-from broker_settings import HOSTNAME, PORT, SERVER_IP
+from broker_settings import PORT, SERVER_IP
 import threading
 
 db_batch = []

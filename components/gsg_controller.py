@@ -1,4 +1,4 @@
-from broker_settings import HOSTNAME, PORT, SERVER_IP
+from broker_settings import  PORT, SERVER_IP
 import paho.mqtt.publish as publish
 import json
 from datetime import datetime

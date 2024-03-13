@@ -1,7 +1,7 @@
 import threading
 import time
 import paho.mqtt.client as mqtt
-from broker_settings import HOSTNAME
+from broker_settings import SERVER_IP
 
 class DoorLightSimulator(threading.Thread):
     def __init__(self, output_queue, callback, settings, publish_event):
@@ -20,16 +20,14 @@ class DoorLightSimulator(threading.Thread):
 
     def run(self):
         mqtt_client = mqtt.Client()
-        mqtt_client.connect(HOSTNAME, 1883, 60)
+        mqtt_client.connect(SERVER_IP, 1883, 60) # prima poruku od servera da treba da upali svetlo jer se desio pokret na DPIR1
         mqtt_client.loop_start()
-        mqtt_client.subscribe("LIGHT_" + self.settings["runs_on"])
+        mqtt_client.subscribe("LIGHT_DL1")
         mqtt_client.on_message = lambda client, userdata, message: self.toggle_light()
     
         while True:
             if self.running_flag:
-                state = 1
-                if not self.state:
-                     state = 0
+                state = 1 if self.state else 0 # na svakih 5 sekundi pise u bazu stanje svetla
                 self.output_queue.put(f"Current Door Light State: {state}")
                 self.callback(state, self.settings, self.publish_event)
                 time.sleep(5)

@@ -9,7 +9,7 @@
         },
         "DL": {
             "device_type": "dl",
-            "simulated": false,
+            "simulated": true,
             "port": 18,
             "runs_on": "PI1",
             "name": "DL - Device DL"
@@ -56,14 +56,14 @@
             "simulated": true,
             "pin": 17,
             "runs_on": "PI2",
-            "name": "DB - SMART_RPIR1"
+            "name": "Room PIR 1"
         },
         "RPIR2": {
             "device_type": "pir",
             "simulated": true,
             "pin": 17,
             "runs_on": "PI1",
-            "name": "DB - SMART RPIR2"
+            "name": "Room PIR 2"
         },
         "RDHT1": {
             "device_type": "dht",

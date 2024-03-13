@@ -1,7 +1,7 @@
 from simulators.pir_simulator import MotionSensorSimulator
 import threading
 from simulators.ds_simulator import DoorSensorSimulator
-from broker_settings import HOSTNAME, PORT, SERVER_IP
+from broker_settings import PORT, SERVER_IP
 import paho.mqtt.publish as publish
 import json
 from datetime import datetime
@@ -42,7 +42,7 @@ def pir_callback(status, pir_settings, publish_event):
         "simulated": pir_settings['simulated'],
         "runs_on": pir_settings["runs_on"],
         "name": pir_settings["name"],
-        "value": status , # 0 ili 1,
+        "value": status , # 0 ili 1, todo! stavi status umesto broja
         "time": current_timestamp
     }
 

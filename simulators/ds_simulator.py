@@ -3,7 +3,7 @@ import threading
 import time
 from datetime import datetime
 import paho.mqtt.client as mqtt
-from broker_settings import HOSTNAME, SERVER_IP
+from broker_settings import  SERVER_IP
 import json
 
 class DoorSensorSimulator(threading.Thread):
@@ -11,13 +11,14 @@ class DoorSensorSimulator(threading.Thread):
         super().__init__()
         self.output_queue = output_queue
         self.running_flag = True
-        self.alarm_system_active = True  # sistem alarma inicijalno upaljen
         self.callback = callback
         self.settings = settings
         self.publish_event = publish_event
         self.locked_counter = 0
 
     def stop_alarm(self, mqtt_client):
+        print("Ugasi alarm: ", self.settings["name"])
+
         current_timestamp = datetime.utcnow().isoformat()
         status_payload = {
             "measurement": "Alarm",
@@ -28,10 +29,10 @@ class DoorSensorSimulator(threading.Thread):
             "time": current_timestamp
         }
 
-        mqtt_client.publish("Alarm", json.dumps(status_payload))
-        pass
+        mqtt_client.publish("Alarm", json.dumps(status_payload)) # ovde mi pozove dvaput ne znam zasto
 
     def start_alarm(self, mqtt_client):
+        print("Dodajem alarm: ", self.settings["name"])
         current_timestamp = datetime.utcnow().isoformat()
         status_payload = {
             "measurement": "Alarm",
@@ -52,7 +53,7 @@ class DoorSensorSimulator(threading.Thread):
             if self.running_flag:
                 import random
                 status = random.choice((1, 0))  # 1 = "Unlocked", 0 = "Locked"
-                if status: # status == 1
+                if status == 1:
                     self.locked_counter += 1
                     if self.locked_counter == 2:
                         self.start_alarm(mqtt_client)
@@ -62,4 +63,4 @@ class DoorSensorSimulator(threading.Thread):
                     self.locked_counter = 0
                 self.output_queue.put("DS - Unlocked" if status == 1 else "DS - Locked")
                 self.callback(status, self.settings, self.publish_event)
-                time.sleep(2)
+                time.sleep(3)
