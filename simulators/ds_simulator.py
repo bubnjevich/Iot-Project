@@ -17,7 +17,7 @@ class DoorSensorSimulator(threading.Thread):
         self.locked_counter = 0
 
     def stop_alarm(self, mqtt_client):
-        print("Ugasi alarm: ", self.settings["name"])
+        #print("Ugasi alarm: ", self.settings["name"])
 
         current_timestamp = datetime.utcnow().isoformat()
         status_payload = {
@@ -32,7 +32,7 @@ class DoorSensorSimulator(threading.Thread):
         mqtt_client.publish("Alarm", json.dumps(status_payload)) # ovde mi pozove dvaput ne znam zasto
 
     def start_alarm(self, mqtt_client):
-        print("Dodajem alarm: ", self.settings["name"])
+        #print("Dodajem alarm: ", self.settings["name"])
         current_timestamp = datetime.utcnow().isoformat()
         status_payload = {
             "measurement": "Alarm",
