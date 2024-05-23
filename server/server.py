@@ -82,13 +82,13 @@ def save_to_db(data):
 def process_sensor(sensor_name):
     global current_people_number
     data_response = get_last_two_distance_of_dus(sensor_name)
-    poslednji = round(float(data_response["data"][0]["_value"]), 2)
-    pretposlednji = round(float(data_response["data"][1]["_value"]), 2)
-    if poslednji > pretposlednji: # osoba izlazi iz objekta
+    last = round(float(data_response["data"][0]["_value"]), 2)
+    before_last = round(float(data_response["data"][1]["_value"]), 2)
+    if last > before_last: # osoba izlazi iz objekta
         if current_people_number - 1 < 0:
             return
         
-    current_people_number += 1 if poslednji < pretposlednji else -1
+    current_people_number += 1 if last < before_last else -1
     print("Trenutan broj ljudi u kuci: ", current_people_number)
     handle_people()
 
