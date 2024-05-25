@@ -10,7 +10,7 @@ from components.pir_controller import run_pir
 from components.db_controller import run_db
 from components.gsg_controller import run_gsg
 from components.lcd_controller import run_lcd
-from components.four_sd_controller import run_4sd
+from components.four_sd_controller import run_four_sd
 import sys
 
 

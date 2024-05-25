@@ -23,29 +23,29 @@ class DoorBuzzerSimulator(threading.Thread):
             # Proverite da li treba da se upali budilnik
             # self.running_flag = data["start"]
             if data["value"]:
-                print("AKTIVIRAN BUDILNIK: BUZZ BUZZ BUZZ BUZZZ!!!!!")
+                # print("AKTIVIRAN BUDILNIK: BUZZ BUZZ BUZZ BUZZZ!!!!!")
                 self.running_flag = True
             else:
                 # Isključite budilnik
-                print("BUDILNIK UGASEN")
+                # print("BUDILNIK UGASEN")
                 self.running_flag = False
         
         if data["measurement"] == "DMS":
             if self.pin == "" and  not data["simulated"]: # ako korisnik prvi put unosi DMS
-                # print("postavio self.pin na ", data["value"])
+                print("postavio self.pin na ", data["value"])
                 self.pin = data["value"]
                 time.sleep(10)
                 self.system_active = True
             else:
                 if data["value"] == self.pin:
                     if self.running_flag:   # ako je upaljen alarm
-                        # print("Alarm/i je bio upaljen SVE gasim...")
+                        print("Alarm/i je bio upaljen SVE gasim...")
                         self.running_flag = False
                         self.system_active = False
                         self.alarm_list = []
                     
                     elif not self.system_active: # nije sistem aktivan
-                        # print("Sistem nije bio aktivan. Aktiviracu sistem alarma za 10 sekundi.....")
+                        print("Sistem nije bio aktivan. Aktiviracu sistem alarma za 10 sekundi.....")
                         time.sleep(10)  # aktiviraj nakon 10 sekundi
                         self.system_active = True
             return
