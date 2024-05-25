@@ -19,6 +19,17 @@ class DoorBuzzerSimulator(threading.Thread):
         self.pin = ""
 
     def handle_alarm(self, data, mqtt_client):
+        if data["measurement"] == "Clock":
+            # Proverite da li treba da se upali budilnik
+            # self.running_flag = data["start"]
+            if data["value"]:
+                print("AKTIVIRAN BUDILNIK: BUZZ BUZZ BUZZ BUZZZ!!!!!")
+                self.running_flag = True
+            else:
+                # Isključite budilnik
+                print("BUDILNIK UGASEN")
+                self.running_flag = False
+        
         if data["measurement"] == "DMS":
             if self.pin == "" and  not data["simulated"]: # ako korisnik prvi put unosi DMS
                 # print("postavio self.pin na ", data["value"])
@@ -62,7 +73,8 @@ class DoorBuzzerSimulator(threading.Thread):
         mqtt_client.connect(SERVER_IP, 1883, 60)
         mqtt_client.loop_start()
         mqtt_client.subscribe("AlarmAlerted") # info from server
-
+        if self.settings["name"] == "Bedroom Buzzer":
+            mqtt_client.subscribe("Clock")
 
         mqtt_client.on_message = lambda client, userdata, message: self.handle_alarm(json.loads(message.payload.decode('utf-8')), mqtt_client)
         while True:

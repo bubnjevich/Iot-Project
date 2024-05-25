@@ -6,6 +6,8 @@ from flask_socketio import SocketIO, emit
 from influxdb_client.client.write_api import SYNCHRONOUS
 import paho.mqtt.client as mqtt
 import json
+import sched
+import time
 from congif import *
 
 
@@ -70,6 +72,9 @@ def save_to_db(data):
         point = handle_rotation(data)
         write_api.write(bucket=bucket, org=org, record=point)
     elif data["measurement"] == "NumberPeople":
+        pass
+    elif data["measurement"] == "Clock":
+        # write_api.write(bucket=bucket, org=org, record=point)
         pass
     elif data["measurement"] == "NotifyFrontend":
         point = handle_alarm(data)
@@ -138,6 +143,30 @@ def handle_pin_input(data):
 
     }
     mqtt_client.publish("AlarmAlerted", json.dumps(point_data))
+    
+    
+@socketio.on("Clock")
+def handle_clock_input(data):
+    print("Sat navijen na: " , data)
+    alarm_time = data['alarmTime']
+    scheduler = sched.scheduler(time.time, time.sleep)
+    alarm_timestamp = time.mktime(time.strptime(alarm_time, "%Y-%m-%dT%H:%M:%S"))
+    
+    def trigger_alarm():
+        print("ALARM UGASEN!!")
+        current_timestamp = datetime.utcnow().isoformat()
+        point_data = {
+            "measurement": "Clock",
+            "value": data["isOn"],
+            "time": current_timestamp,
+            "simulated": False
+            
+        }
+        mqtt_client.publish("Clock", json.dumps(point_data))
+        
+    
+    scheduler.enterabs(alarm_timestamp, 1, trigger_alarm)
+    scheduler.run()
 
 def handle_alarm(data):
     # print("Alarm se gasi/pali jer je sistem aktivan....")
