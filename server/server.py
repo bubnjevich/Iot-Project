@@ -127,7 +127,7 @@ def send_alarm(data):
         "time": current_timestamp
     }
     mqtt_client.publish("AlarmAlerted", json.dumps(status_payload))
-    socketio.emit('alarm_detected', json.dumps(status_payload))
+    socketio.emit('alarm_detected', json.dumps(status_payload)) # TODO! samo ako je sistem aktivan
 
 
 

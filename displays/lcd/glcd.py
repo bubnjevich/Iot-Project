@@ -41,4 +41,6 @@ class LCD(threading.Thread):
             # TODO: posalji dht na izlaz
             #  self.lcd.message('CPU: ' + get_cpu_temp() + '\n')  # display CPU temperature
             #  self.lcd.message(get_time_now())  # display the time
+            # KZI315, Stigoperadononet
+            # GDHT+GLCD;
             time.sleep(1)
