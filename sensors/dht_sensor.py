@@ -91,6 +91,7 @@ class DHT(threading.Thread):
 			check = self.readDHT11()
 			code = parseCheckCode(check)
 			if self.running_flag:
+				self.output_queue.put(generate_output(self.humidity, self.temperature, self.settings["name"]))
 				self.callback(self.humidity, self.temperature, self.settings, self.publish_event)
 			time.sleep(1)
 		

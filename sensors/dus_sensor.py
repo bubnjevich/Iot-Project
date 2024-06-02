@@ -56,7 +56,7 @@ class UltrasonicDistanceSensor(threading.Thread):
 			distance = self.get_distance()
 			if self.running_flag:
 				if distance is not None:
-					#self.output_queue.put(f'Distance: {distance} cm')
+					self.output_queue.put(f'Distance: {distance} cm')
 					self.callback(distance, self.settings, self.publish_event)
 					time.sleep(1)
 				else:
