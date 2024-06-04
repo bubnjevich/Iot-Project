@@ -6,7 +6,7 @@ import paho.mqtt.publish as publish
 
 dht_batch = []
 publish_data_counter = 0
-publish_data_limit = 5
+publish_data_limit = 3
 counter_lock = threading.Lock()
 
 
@@ -50,7 +50,10 @@ def rgb_callback(color, settings):
 
 def run_rgb(settings, threads_list, output_queue):
 	if settings["simulated"]:
-		pass
+		from simulators.rgb_simulator import RGBSimulator
+		rgb_sensor = RGBSimulator(rgb_callback, output_queue, settings)
+		rgb_sensor.start()
+		threads_list.append(rgb_sensor)
 	else:
 		from actuators.RGB_led import RGBLed
 		rgb_sensor = RGBLed(rgb_callback, output_queue, settings)

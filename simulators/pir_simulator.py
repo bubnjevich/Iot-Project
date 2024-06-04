@@ -2,7 +2,6 @@ import random
 import threading
 import time
 import paho.mqtt.client as mqtt
-from broker_settings import  SERVER_IP
 from datetime import datetime
 
 import json

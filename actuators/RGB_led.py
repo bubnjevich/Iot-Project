@@ -107,6 +107,6 @@ class RGBLed(threading.Thread):
                 elif self.button == "6":
                     self.lightBlue()
                     time.sleep(2)
-                    self.callback("BLUE", self.settings)
-                self.button = ""
-                self.turnOff()
+                    self.callback("LIGHT_BLUE", self.settings)
+                elif self.button == "7":
+                    self.turnOff()

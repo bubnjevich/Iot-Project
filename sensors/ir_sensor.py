@@ -91,5 +91,5 @@ class Bir(threading.Thread):
             inData = self.convertHex(self.getBinary())  # Runs subs to get incoming hex value
             for button in range(len(self.Buttons)):  # Runs through every value in list
                 if hex(self.Buttons[button]) == inData:  # Checks this against incoming
-                    self.output.append(self.ButtonsNames[button])
+                    self.output.put(self.ButtonsNames[button])
                     self.callback(self.ButtonsNames[button], self.settings)

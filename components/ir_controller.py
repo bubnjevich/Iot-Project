@@ -32,7 +32,7 @@ def bir_callback(button, settings):
 
 	current_timestamp = datetime.utcnow().isoformat()
 	temp_payload = {
-		"measurement": "IR",
+		"measurement": "BIR",
 		"simulated": settings['simulated'],
 		"runs_on": settings["runs_on"],
 		"name": settings["name"],
@@ -40,7 +40,7 @@ def bir_callback(button, settings):
 		"time": current_timestamp
 	}
 	with counter_lock:
-		dht_batch.append(('IR', json.dumps(temp_payload), 0, True))
+		dht_batch.append(('BIR', json.dumps(temp_payload), 0, True))
 		publish_data_counter += 1
 	
 	if publish_data_counter >= publish_data_limit:
@@ -49,7 +49,10 @@ def bir_callback(button, settings):
 
 def run_ir(settings, threads_list, output_queue):
 	if settings["simulated"]:
-		pass
+		from simulators.ir_simulator import BIRSimulator
+		bir = BIRSimulator(bir_callback, output_queue, settings)
+		bir.start()
+		threads_list.append(bir)
 	else:
 		from sensors.ir_sensor import Bir
 		bir = Bir(bir_callback, output_queue, settings)

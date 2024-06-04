@@ -11,6 +11,8 @@ from components.db_controller import run_db
 from components.gsg_controller import run_gsg
 from components.lcd_controller import run_lcd
 from components.four_sd_controller import run_four_sd
+from components.ir_controller import run_ir
+from components.rgb_controller import run_rgb
 import sys
 
 

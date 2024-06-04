@@ -53,6 +53,8 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("Light")
     client.subscribe("NotifyFrontend")
     client.subscribe("CurrentPeopleNumber") # sacuvaj trenutan broj ljudi
+    client.subscribe("RGB")
+    client.subscribe("BIR")
 
 
 mqtt_client.on_connect = on_connect
@@ -93,7 +95,7 @@ def save_to_db(data):
         notify_glcd(data)
         point = handle_other_data(data)
         write_api.write(bucket=bucket, org=org, record=point)
-    elif data["measurement"] == "IR":
+    elif data["measurement"] == "BIR":
         notify_rgb(data)
         point = handle_other_data(data)
         write_api.write(bucket=bucket, org=org, record=point)
@@ -163,7 +165,7 @@ def handle_pin_input(data):
     mqtt_client.publish("AlarmAlerted", json.dumps(point_data))
     
     
-@socketio.on("RGB_LIGHT")
+@socketio.on("SetLightColor")
 def handle_rhb_input(data):
     print("Primio sam BOJU:", data)
     current_timestamp = datetime.utcnow().isoformat()
