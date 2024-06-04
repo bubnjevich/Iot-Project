@@ -37,7 +37,7 @@ class DoorMembraneSwitchSimulator(threading.Thread):
             for value in generate_value(): # salji input od 4 digit-a
                 l += value
                 if self.running_flag and len(l) == 4:
-                    self.send_dms(mqtt_client, "1234")
+                    self.send_dms(mqtt_client, l)
                     self.callback(l, self.settings, self.publish_event)
                     self.output_queue.put(l)
                     l = ""
