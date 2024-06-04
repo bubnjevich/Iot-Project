@@ -212,7 +212,7 @@ def handle_alarm(data):
         .tag("alarm_name", data["alarm_name"])
         .tag("device_name", data["device_name"])
         .tag("type", data["type"])
-        .field("status", status)
+        .field("measurement", status)
         .time(time)
     )
     socketio.emit('alarm_detected', json.dumps(data))
