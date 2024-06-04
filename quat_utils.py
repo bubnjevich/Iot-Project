@@ -4,8 +4,10 @@ All quaternion operations in this py file follow Hamilton standard:
     2. pq = p * q means first rotate q and then rotate p
 """
 import math
-import numpy as np
-
+try:
+    import numpy as np
+except:
+    pass
 
 def angle_to_quat(angle):
     """

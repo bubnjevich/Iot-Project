@@ -3,7 +3,7 @@ import time
 from typing import Any
 import paho.mqtt.client as mqtt
 import json
-from broker_settings import HOSTNAME
+from broker_settings import SERVER_IP
 
 try:
 	import RPi.GPIO as GPIO
@@ -96,7 +96,7 @@ class Buzzer(threading.Thread):
 
 	def run(self):
 		mqtt_client = mqtt.Client()
-		mqtt_client.connect(HOSTNAME, 1883, 60)
+		mqtt_client.connect(SERVER_IP, 1883, 60)
 		mqtt_client.loop_start()
 		mqtt_client.subscribe("AlarmAlerted")
 		if self.settings["name"] == "Bedroom Buzzer":
