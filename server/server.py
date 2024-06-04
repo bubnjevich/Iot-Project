@@ -163,6 +163,19 @@ def handle_pin_input(data):
     mqtt_client.publish("AlarmAlerted", json.dumps(point_data))
     
     
+@socketio.on("RGB_LIGHT")
+def handle_rhb_input(data):
+    print("Primio sam BOJU:", data)
+    current_timestamp = datetime.utcnow().isoformat()
+    point_data = {
+        "measurement" : "IR",
+        "value" : str(data),
+        "time": current_timestamp,
+        "simulated" : False
+    }
+    mqtt_client.publish("IR", json.dumps(point_data))
+    
+    
 @socketio.on("Clock")
 def handle_clock_input(data):
     print("Sat navijen na: " , data)
