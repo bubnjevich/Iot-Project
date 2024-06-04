@@ -58,6 +58,11 @@ def on_connect(client, userdata, flags, rc):
 mqtt_client.on_connect = on_connect
 mqtt_client.on_message = lambda client, userdata, msg: save_to_db(json.loads(msg.payload.decode('utf-8')))
 
+
+def notify_glcd(data):
+    mqtt_client.publish("GDHT", json.dumps(data))
+
+
 def save_to_db(data):
     write_api = influxdb_client.write_api(write_options=SYNCHRONOUS)
 
@@ -78,6 +83,14 @@ def save_to_db(data):
         pass
     elif data["measurement"] == "NotifyFrontend":
         point = handle_alarm(data)
+        write_api.write(bucket=bucket, org=org, record=point)
+    elif data["measurement"] == "Temperature" and data["name"] == "Garage DHT":
+        notify_glcd(data)
+        point = handle_other_data(data)
+        write_api.write(bucket=bucket, org=org, record=point)
+    elif data["measurement"] == "Humidity" and data["name"] == "Garage DHT":
+        notify_glcd(data)
+        point = handle_other_data(data)
         write_api.write(bucket=bucket, org=org, record=point)
 
     else:

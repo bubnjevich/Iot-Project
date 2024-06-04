@@ -31,7 +31,7 @@ class UltrasonicDistanceSensor(threading.Thread):
 		pulse_start_time = time.time()
 		pulse_end_time = time.time()
 
-		max_iter = 100
+		max_iter = 1000
 
 		iter = 0
 		while GPIO.input(self.ECHO_PIN) == 0:
@@ -60,6 +60,7 @@ class UltrasonicDistanceSensor(threading.Thread):
 					self.callback(distance, self.settings, self.publish_event)
 					time.sleep(1)
 				else:
+					# dus 330 + 220
 					self.callback("Measurement timed out", self.settings, self.publish_event)
 					#self.output_queue.put('Measurement timed out')
 					time.sleep(1)

@@ -1,4 +1,8 @@
+import json
 import threading
+from broker_settings import SERVER_IP
+import paho.mqtt.client as mqtt
+
 import time
 try:
 	import RPi.GPIO as GPIO
@@ -23,6 +27,7 @@ class D4S7(threading.Thread):
                     '7':(1,1,1,0,0,0,0),
                     '8':(1,1,1,1,1,1,1),
                     '9':(1,1,1,1,0,1,1)}
+		self.time_interval = 0.001
 
 
 
@@ -36,8 +41,16 @@ class D4S7(threading.Thread):
 			GPIO.setup(digit, GPIO.OUT)
 			GPIO.output(digit, 1)
 
+	def handle_clock(self, data):
+		if data["measurement"] == "Clock":
+			self.time_interval = 0.5 if data["value"] else 0.001
 
 	def run(self) -> None:
+		mqtt_client = mqtt.Client()
+		mqtt_client.connect(SERVER_IP, 1883, 60)
+		mqtt_client.loop_start()
+		mqtt_client.subscribe("Clock")
+		mqtt_client.on_message = lambda client, userdata, message: self.handle_clock(json.loads(message.payload.decode('utf-8')))
 		self.setup()
 		try:
 			while True:
@@ -50,7 +63,7 @@ class D4S7(threading.Thread):
 						else:
 							GPIO.output(25, 0)
 					GPIO.output(self.digits[digit], 0)
-					time.sleep(0.001)
+					time.sleep(self.time_interval)
 					GPIO.output(self.digits[digit], 1)
 		finally:
 			GPIO.cleanup()

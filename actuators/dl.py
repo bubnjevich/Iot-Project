@@ -4,7 +4,7 @@ import time
 from typing import Any
 import paho.mqtt.client as mqtt
 import time
-from broker_settings import HOSTNAME
+from broker_settings import SERVER_IP
 try:
 	import RPi.GPIO as GPIO
 except:
@@ -38,7 +38,7 @@ class LED(threading.Thread):
 	def run(self):
 		self.setup()
 		mqtt_client = mqtt.Client()
-		mqtt_client.connect(HOSTNAME, 1883, 60)
+		mqtt_client.connect(SERVER_IP, 1883, 60)
 		mqtt_client.loop_start()
 		mqtt_client.on_connect = self.on_connect
 		mqtt_client.on_message = lambda client, userdata, message: self.toggle_light()

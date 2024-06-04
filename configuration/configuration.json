@@ -67,10 +67,10 @@
         },
         "RDHT1": {
             "device_type": "dht",
-            "simulated": true,
+            "simulated": true ,
             "pin": 17,
             "runs_on": "PI1",
-            "name": "DB - SMART RPIR5"
+            "name": "RDHT 1"
         },
         "RDHT2": {
             "device_type": "dht",
