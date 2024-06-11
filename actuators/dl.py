@@ -23,16 +23,16 @@ class LED(threading.Thread):
 		self.publish_event = publish_event
 	
 	def setup(self):
-		#GPIO.setmode(GPIO.BCM)
-		#GPIO.setup(self.port,GPIO.OUT)
-		pass
+		GPIO.setmode(GPIO.BCM)
+		GPIO.setup(self.port,GPIO.OUT)
+
 
 	def toggle_light(self):
 		self.state = True
 
 	def on_connect(self, client, userdata, flags, rc):
 		# Subscribe to the topic on successful connection
-		client.subscribe("LIGHT_" + self.settings["runs_on"])
+		client.subscribe("LIGHT_DL1")
 
  
 	def run(self):
@@ -45,11 +45,11 @@ class LED(threading.Thread):
 		while True:
 			if self.running_flag:
 				self.callback(self.state, self.settings, self.publish_event)
+				self.output_queue.put(f"Current Door Light State: {self.state}")
 				if self.state:
-					#GPIO.output(self.port,GPIO.HIGH)
+					GPIO.output(self.port,GPIO.HIGH)
 					time.sleep(10)
 					self.state = False
 				else:
-					#GPIO.output(self.port,GPIO.LOW)
-					pass
+					GPIO.output(self.port,GPIO.LOW)
 				time.sleep(1)

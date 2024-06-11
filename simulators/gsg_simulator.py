@@ -57,7 +57,6 @@ class GSGSimulator(threading.Thread):
                 9.81 + random.uniform(-noise_level, noise_level)]
 
     def handle_alarm(self, mqtt_client):
-        print("detektujem znacajn POMERAJ!!!")
         current_timestamp = datetime.utcnow().isoformat()
         status_payload = {
             "measurement": "Alarm",
@@ -81,9 +80,8 @@ class GSGSimulator(threading.Thread):
             gyro = self.simulate_gyroscope()
             accel = self.simulate_acceleration()
 
-            dt = 1
+            dt = 2
             dqn = rk4(np.array(self.gyro_angles), gyro, dt)  # Convert to numpy array
-            print(dqn)
 
             self.gyro_angles = gyro  # Convert back to list for consistency
             if max(abs(angle) for angle in dqn[1:]) > self.threshold_angle:

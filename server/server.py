@@ -55,6 +55,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("CurrentPeopleNumber") # sacuvaj trenutan broj ljudi
     client.subscribe("RGB")
     client.subscribe("BIR")
+    client.subscribe("Buzzer")
 
 
 mqtt_client.on_connect = on_connect

@@ -33,7 +33,7 @@ dms_value_to_send = ""
 def dms_callback(dms_value, dms_settings, publish_event):
     global publish_data_counter, publish_data_limit, dms_value_to_send
 
-    if not settings['simulated']:
+    if not dms_settings['simulated']:
         if len(dms_value_to_send) != 3:
             dms_value_to_send += str(dms_value)
         else:

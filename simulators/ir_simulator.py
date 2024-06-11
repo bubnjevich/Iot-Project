@@ -15,5 +15,5 @@ class BIRSimulator(threading.Thread):
 		while True:
 			motion = random.choice(self.ButtonsNames)
 			self.output.put(motion)
-			# self.callback(motion, self.settings) TODO: otkomentarisati
-			time.sleep(20)
+			self.callback(motion, self.settings)
+			time.sleep(1)

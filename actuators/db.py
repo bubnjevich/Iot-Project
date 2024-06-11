@@ -102,7 +102,6 @@ class Buzzer(threading.Thread):
 		if self.settings["name"] == "Bedroom Buzzer":
 			mqtt_client.subscribe("Clock")
 		mqtt_client.on_message = lambda client, userdata, message: self.handle_alarm(json.loads(message.payload.decode('utf-8')), mqtt_client)
-
 		self.setup()
 		while True:
 			if self.running_clock:
