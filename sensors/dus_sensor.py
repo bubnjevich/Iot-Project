@@ -16,6 +16,7 @@ class UltrasonicDistanceSensor(threading.Thread):
 		self.callback = callback
 		self.publish_event = publish_event
 		self.settings = settings
+		self.setup()
 
 	def setup(self):
 		GPIO.setmode(GPIO.BCM)
@@ -61,6 +62,7 @@ class UltrasonicDistanceSensor(threading.Thread):
 					time.sleep(1)
 				else:
 					# dus 330 + 220
-					self.callback("Measurement timed out", self.settings, self.publish_event)
+					self.output_queue.put("Measurement timed out!")
+					#self.callback("Measurement timed out", self.settings, self.publish_event)
 					#self.output_queue.put('Measurement timed out')
 					time.sleep(1)
