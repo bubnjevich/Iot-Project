@@ -92,6 +92,7 @@ def save_to_db(data):
         point = handle_other_data(data)
         write_api.write(bucket=bucket, org=org, record=point)
     elif data["measurement"] == "Humidity" and data["name"] == "Garage DHT":
+        print("PRIMIO GARAGE GDTH")
         notify_glcd(data)
         point = handle_other_data(data)
         write_api.write(bucket=bucket, org=org, record=point)
@@ -99,7 +100,10 @@ def save_to_db(data):
         notify_rgb(data)
         point = handle_other_data(data)
         write_api.write(bucket=bucket, org=org, record=point)
-
+    elif data["measurement"] == "MembraneSwitch" and not data["simulated"]:
+        send_dms(data)
+        point = handle_other_data(data)
+        write_api.write(bucket=bucket, org=org, record=point)
     else:
         point = handle_other_data(data)
         write_api.write(bucket=bucket, org=org, record=point)
@@ -150,6 +154,17 @@ def send_alarm(data):
     socketio.emit('alarm_detected', json.dumps(status_payload)) # TODO! samo ako je sistem aktivan
 
 
+def send_dms(dms):
+    """Send real DMS from device"""
+    current_timestamp = datetime.utcnow().isoformat()
+    point_data = {
+        "measurement" : "DMS",
+        "value" : dms["value"],
+        "time": current_timestamp,
+        "simulated" : False
+
+    }
+    mqtt_client.publish("AlarmAlerted", json.dumps(point_data))
 
 @socketio.on("PINInput")
 def handle_pin_input(data):

@@ -38,7 +38,6 @@ class MembraneKeypad(threading.Thread):
 		GPIO.setup(self.C4, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 	def readLine(self, line, characters):
-		# TODO popravi DMS da zapravo radi
 		GPIO.output(line, GPIO.HIGH)
 		if(GPIO.input(self.C1) == 1):
 			self.callback(characters[0], self.settings, self.publish_event)
